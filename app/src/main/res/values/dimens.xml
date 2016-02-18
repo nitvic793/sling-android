@@ -8,4 +8,5 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="layout_margin_login">32dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 </resources>

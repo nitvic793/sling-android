@@ -16,6 +16,15 @@ import in.sling.adapters.ChatPagerAdapter;
  */
 public class ChatFragment extends Fragment {
 
+    public static ChatFragment newInstance() {
+        
+        Bundle args = new Bundle();
+        
+        ChatFragment fragment = new ChatFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
