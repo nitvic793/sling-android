@@ -13,8 +13,17 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="ChatTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/ChatTabText</item>
+        <item name="tabSelectedTextColor">@color/white_primary_text</item>
+    </style>
+
+    <style name="ChatTabText" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textColor">@color/white_secondary_text</item>
+    </style>
 
 </resources>
