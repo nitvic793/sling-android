@@ -1,4 +1,4 @@
-package in.sling;
+package in.sling.activities;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,10 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import in.sling.R;
+
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -37,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
         mMobileNumberView = (EditText) findViewById(R.id.mobile_number);
@@ -63,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.register_finish_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
                 startActivity(intent);
             }
         });
