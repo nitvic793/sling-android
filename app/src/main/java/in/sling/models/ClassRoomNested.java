@@ -1,14 +1,16 @@
 
 package in.sling.models;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Generated;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Generated;
+
 @Generated("org.jsonschema2pojo")
-public class ClassRoom {
+public class ClassRoomNested {
 
     @SerializedName("students")
     @Expose
@@ -19,11 +21,11 @@ public class ClassRoom {
 
     @SerializedName("teacher")
     @Expose
-    private Teacher teacher;
-
+    private String teacher;
+    
     @SerializedName("school")
     @Expose
-    private School school;
+    private String school;
     @SerializedName("subject")
     @Expose
     private String subject;
@@ -81,7 +83,7 @@ public class ClassRoom {
      * @return
      * The teacher
      */
-    public Teacher getTeacher() {
+    public String getTeacher() {
         return teacher;
     }
 
@@ -90,7 +92,7 @@ public class ClassRoom {
      * @param teacher
      * The teacher
      */
-    public void setTeacher(Teacher teacher) {
+    public void setTeacher(String teacher) {
         this.teacher = teacher;
     }
 
@@ -99,7 +101,7 @@ public class ClassRoom {
      * @return
      * The school
      */
-    public School getSchool() {
+    public String getSchool() {
         return school;
     }
 
@@ -108,7 +110,7 @@ public class ClassRoom {
      * @param school
      * The school
      */
-    public void setSchool(School school) {
+    public void setSchool(String school) {
         this.school = school;
     }
 

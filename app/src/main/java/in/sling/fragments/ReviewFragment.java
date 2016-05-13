@@ -6,6 +6,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,11 +20,20 @@ import android.widget.Spinner;
 import java.util.ArrayList;
 
 import in.sling.R;
+import in.sling.adapters.NoticeBoardAdapter;
+import in.sling.adapters.ReviewAdapter;
+import in.sling.models.NoticeBoardBase;
+import in.sling.models.Review;
 
 /**
  * Created by abhishek on 18/02/16 at 6:18 PM.
  */
 public class ReviewFragment extends Fragment {
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private static RecyclerView.Adapter adapter;
+
+    private static ArrayList<Review> data;
 
     public static ReviewFragment newInstance() {
 
@@ -41,7 +53,18 @@ public class ReviewFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_review, container, false);
+        View view = inflater.inflate(R.layout.review_recycler, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.review_rv);
+        layoutManager = new LinearLayoutManager(view.getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        data = new ArrayList<>();
+        Review r = new Review();
+        r.setReview("Test Review");
+        r.setId("1");
+        data.add(r);
+        adapter = new ReviewAdapter(data);
+        recyclerView.setAdapter(adapter);
         return view;
     }
 

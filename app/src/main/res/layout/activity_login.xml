@@ -76,6 +76,7 @@
             android:layout_weight="0.2"
             android:gravity="bottom"
             android:padding="@dimen/layout_margin_login"
+            android:id="@+id/new_user_text"
             android:text="@string/register_new_user"/>
 
     </LinearLayout>

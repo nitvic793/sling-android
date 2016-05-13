@@ -1,6 +1,8 @@
-
 package in.sling.models;
 
+/**
+ * Created by nitiv on 5/12/2016.
+ */
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Generated;
@@ -8,28 +10,29 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("org.jsonschema2pojo")
-public class ClassRoom {
+public class Student {
 
-    @SerializedName("students")
+    @SerializedName("classes")
     @Expose
-    private List<Student> students = new ArrayList<Student>();
-    @SerializedName("notices")
+    private List<ClassRoomNested> classes = new ArrayList<ClassRoomNested>();
+    @SerializedName("parentInfo")
     @Expose
-    private List<NoticeBoardBase> notices = new ArrayList<NoticeBoardBase>();
-
-    @SerializedName("teacher")
+    private List<User> parentInfo = new ArrayList<User>();
+    @SerializedName("reviews")
     @Expose
-    private Teacher teacher;
-
+    private List<Review> reviews = new ArrayList<Review>();
     @SerializedName("school")
     @Expose
     private School school;
-    @SerializedName("subject")
+    @SerializedName("name")
     @Expose
-    private String subject;
-    @SerializedName("room")
+    private String name;
+    @SerializedName("dob")
     @Expose
-    private String room;
+    private String dob;
+    @SerializedName("identificationNumber")
+    @Expose
+    private String identificationNumber;
     @SerializedName("createdAt")
     @Expose
     private String createdAt;
@@ -43,55 +46,55 @@ public class ClassRoom {
     /**
      *
      * @return
-     * The students
+     * The classes
      */
-    public List<Student> getStudents() {
-        return students;
+    public List<ClassRoomNested> getClasses() {
+        return classes;
     }
 
     /**
      *
-     * @param students
-     * The students
+     * @param classes
+     * The classes
      */
-    public void setStudents(List<Student> students) {
-        this.students = students;
-    }
-
-    /**
-     *
-     * @return
-     * The notices
-     */
-    public List<NoticeBoardBase> getNotices() {
-        return notices;
-    }
-
-    /**
-     *
-     * @param notices
-     * The notices
-     */
-    public void setNotices(List<NoticeBoardBase> notices) {
-        this.notices = notices;
+    public void setClasses(List<ClassRoomNested> classes) {
+        this.classes = classes;
     }
 
     /**
      *
      * @return
-     * The teacher
+     * The parentInfo
      */
-    public Teacher getTeacher() {
-        return teacher;
+    public List<User> getParentInfo() {
+        return parentInfo;
     }
 
     /**
      *
-     * @param teacher
-     * The teacher
+     * @param parentInfo
+     * The parentInfo
      */
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+    public void setParentInfo(List<User> parentInfo) {
+        this.parentInfo = parentInfo;
+    }
+
+    /**
+     *
+     * @return
+     * The reviews
+     */
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    /**
+     *
+     * @param reviews
+     * The reviews
+     */
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 
     /**
@@ -115,37 +118,55 @@ public class ClassRoom {
     /**
      *
      * @return
-     * The subject
+     * The name
      */
-    public String getSubject() {
-        return subject;
+    public String getName() {
+        return name;
     }
 
     /**
      *
-     * @param subject
-     * The subject
+     * @param name
+     * The name
      */
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
      *
      * @return
-     * The room
+     * The dob
      */
-    public String getRoom() {
-        return room;
+    public String getDob() {
+        return dob;
     }
 
     /**
      *
-     * @param room
-     * The room
+     * @param dob
+     * The dob
      */
-    public void setRoom(String room) {
-        this.room = room;
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    /**
+     *
+     * @return
+     * The identificationNumber
+     */
+    public String getIdentificationNumber() {
+        return identificationNumber;
+    }
+
+    /**
+     *
+     * @param identificationNumber
+     * The identificationNumber
+     */
+    public void setIdentificationNumber(String identificationNumber) {
+        this.identificationNumber = identificationNumber;
     }
 
     /**
@@ -203,3 +224,5 @@ public class ClassRoom {
     }
 
 }
+
+

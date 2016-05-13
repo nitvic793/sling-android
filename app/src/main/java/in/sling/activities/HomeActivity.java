@@ -9,9 +9,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import in.sling.R;
 import in.sling.fragments.ChatFragment;
+import in.sling.fragments.NoticeEditorFragment;
 import in.sling.fragments.NoticeFragment;
 import in.sling.fragments.ReviewFragment;
 
@@ -34,6 +36,13 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container,
+                        NoticeFragment.newInstance()).commit();
+        getSupportActionBar().setTitle("Notice Board");
+        getSupportActionBar().setSubtitle("School name here");
     }
 
     @Override
@@ -59,8 +68,8 @@ public class HomeActivity extends AppCompatActivity
             fragmentManager.beginTransaction()
                     .replace(R.id.container,
                             NoticeFragment.newInstance()).commit();
-            getSupportActionBar().setTitle("Notice: School Fees");
-            getSupportActionBar().setSubtitle("Date 09.03.2015");
+            getSupportActionBar().setTitle("Notice Board");
+            getSupportActionBar().setSubtitle("School name here");
 
         } else if (id == R.id.nav_chats) {
             fragmentManager.beginTransaction()
