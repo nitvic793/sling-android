@@ -19,7 +19,7 @@ public class ClassRoom {
 
     @SerializedName("teacher")
     @Expose
-    private Teacher teacher;
+    private User teacher;
 
     @SerializedName("school")
     @Expose
@@ -81,7 +81,7 @@ public class ClassRoom {
      * @return
      * The teacher
      */
-    public Teacher getTeacher() {
+    public User getTeacher() {
         return teacher;
     }
 
@@ -90,7 +90,7 @@ public class ClassRoom {
      * @param teacher
      * The teacher
      */
-    public void setTeacher(Teacher teacher) {
+    public void setTeacher(User teacher) {
         this.teacher = teacher;
     }
 

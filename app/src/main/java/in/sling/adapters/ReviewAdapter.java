@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import in.sling.R;
 import in.sling.models.NoticeBoardBase;
 import in.sling.models.Review;
+import in.sling.models.ReviewViewModel;
 
 /**
  * Created by nitiv on 5/13/2016.
  */
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHolder> {
-    private ArrayList<Review> dataSet;
+    private ArrayList<ReviewViewModel> dataSet;
 
     public static class MyViewHolder extends ViewHolder {
 
@@ -48,7 +49,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     public void onBindViewHolder(MyViewHolder holder, int position) {
         TextView textViewName = holder.textViewName;
         TextView textViewVersion = holder.textViewVersion;
-        textViewName.setText(dataSet.get(position).getId());
+        textViewName.setText(dataSet.get(position).getStudent() + "(" + dataSet.get(position).getClassRoom() + ")");
         textViewVersion.setText(dataSet.get(position).getReview());
     }
 
@@ -57,7 +58,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         public int getItemCount() {
             return dataSet.size();
         }
-    public ReviewAdapter(ArrayList<Review> data) {
+    public ReviewAdapter(ArrayList<ReviewViewModel> data) {
         this.dataSet = data;
     }
     }

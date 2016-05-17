@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import in.sling.R;
 import in.sling.models.NoticeBoard;
 import in.sling.models.NoticeBoardBase;
+import in.sling.models.NoticeBoardViewModel;
 import in.sling.services.DataService;
 
 /**
  * Created by nitiv on 5/13/2016.
  */
 public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.MyViewHolder> {
-    private ArrayList<NoticeBoardBase> dataSet;
+    private ArrayList<NoticeBoardViewModel> dataSet;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -53,7 +54,7 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
         TextView textViewVersion = holder.textViewVersion;
         ImageView imageView = holder.imageViewIcon;
 
-        textViewName.setText(dataSet.get(position).getId());
+        textViewName.setText(dataSet.get(position).getClassRoom());
         textViewVersion.setText(dataSet.get(position).getNotice());
     }
 
@@ -63,7 +64,7 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
             return dataSet.size();
         }
 
-    public NoticeBoardAdapter(ArrayList<NoticeBoardBase> data) {
+    public NoticeBoardAdapter(ArrayList<NoticeBoardViewModel> data) {
         this.dataSet = data;
     }
 }

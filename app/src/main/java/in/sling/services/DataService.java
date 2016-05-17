@@ -44,7 +44,7 @@ public class DataService {
     SlingService service;
     UserPopulated user;
     Gson gson = new Gson();
-    ArrayList<Student> students = new ArrayList<Student>();
+    ArrayList<StudentNested> students = new ArrayList<StudentNested>();
     ArrayList<ClassRoom> classes = new ArrayList<ClassRoom>();
     ArrayList<NoticeBoardBase> notices = new ArrayList<NoticeBoardBase>();
 
@@ -61,6 +61,10 @@ public class DataService {
 
     public UserPopulated getUser(){
         return gson.fromJson(preferences.getString("user",""),UserPopulated.class);
+    }
+
+    public String getUserType(){
+       return preferences.getString("userType","");
     }
 
 
@@ -86,8 +90,8 @@ public class DataService {
                 GetWardsResponse result = response.body().getData();
                 classes.addAll(result.getClasses());
                 Map<String, ClassRoom> classRoomHashMap = new HashMap<String, ClassRoom>();
-                for(ClassRoom cl: classes){
-                    classRoomHashMap.put(cl.getId(),cl);
+                for (ClassRoom cl : classes) {
+                    classRoomHashMap.put(cl.getId(), cl);
                     notices.addAll(cl.getNotices());
                 }
 
@@ -104,8 +108,8 @@ public class DataService {
 //                for(NoticeBoardBase nb: noticeMap.values()){
 //                    notices.add(nb);
 //                }
-                preferences.edit().putString("classes",gson.toJson(classes)).apply();
-                preferences.edit().putString("notices",gson.toJson(notices)).apply();
+                preferences.edit().putString("classes", gson.toJson(classes)).apply();
+                preferences.edit().putString("notices", gson.toJson(notices)).apply();
                 preferences.edit().putString("wards", gson.toJson(result.getWards())).apply();
                 progress.dismiss();
                 Log.i("Test", response.message());
@@ -137,8 +141,9 @@ public class DataService {
         });
     }
 
-    public ArrayList<ClassRoom> getClasses(){
-        return gson.fromJson(preferences.getString("classes", ""),(new ArrayList<ClassRoom>()).getClass());
+    public List<ClassRoom> getClasses(){
+        ClassRoom[] cls = gson.fromJson(preferences.getString("classes", ""),(ClassRoom[].class));
+        return Arrays.asList(cls);
     }
 
 
@@ -149,9 +154,28 @@ public class DataService {
     }
 
     public ClassRoom findClassRoom(String id){
-        HashMap<String, ClassRoom> t = new HashMap<>();
-        t = gson.fromJson(preferences.getString("classes",""),t.getClass());
-        return t.get(id);
+        ClassRoom[] cls = gson.fromJson(preferences.getString("classes", ""),(ClassRoom[].class));
+        for(ClassRoom cl: cls){
+            if(cl.getId().equalsIgnoreCase(id)){
+                return cl;
+            }
+        }
+        return null;
+    }
+
+    public List<ReviewPopulated> getReviewsTeacherView(){
+        ReviewPopulated[] reviews = gson.fromJson(preferences.getString("reviews", ""),(ReviewPopulated[].class));
+        return Arrays.asList(reviews);
+    }
+
+    public List<Student> getWardsParentView(){
+        Student[] students = gson.fromJson(preferences.getString("wards",""), Student[].class);
+        return Arrays.asList(students);
+    }
+
+    public List<StudentNested> getStudentsTeacherView(){
+        StudentNested[] students = gson.fromJson(preferences.getString("students",""),StudentNested[].class);
+        return Arrays.asList(students);
     }
 
     private void loadTeacherClasses(final ProgressDialog progress){
@@ -164,6 +188,7 @@ public class DataService {
                 for(ClassRoom cl: classes){
                     classRoomHashMap.put(cl.getId(),cl);
                     notices.addAll(cl.getNotices());
+                    students.addAll(cl.getStudents());
                 }
 
                 classes.clear();
@@ -182,6 +207,7 @@ public class DataService {
 
                 preferences.edit().putString("classes",gson.toJson(classes)).apply();
                 preferences.edit().putString("notices",gson.toJson(notices)).apply();
+                preferences.edit().putString("students",gson.toJson(students)).apply();
                 progress.dismiss();
             }
 

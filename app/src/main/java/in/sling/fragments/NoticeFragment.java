@@ -1,6 +1,7 @@
 package in.sling.fragments;
 
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +32,7 @@ import in.sling.adapters.NoticeBoardAdapter;
 import in.sling.models.ClassRoom;
 import in.sling.models.Data;
 import in.sling.models.NoticeBoardBase;
+import in.sling.models.NoticeBoardViewModel;
 import in.sling.services.DataService;
 import in.sling.services.RestFactory;
 import in.sling.services.SlingService;
@@ -51,6 +53,8 @@ public class NoticeFragment extends Fragment {
     private DataService dataService;
 
     private static ArrayList<NoticeBoardBase> data;
+    private static ArrayList<NoticeBoardViewModel> noticeData = new ArrayList<>();
+
     public static NoticeFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -82,9 +86,26 @@ public class NoticeFragment extends Fragment {
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adapter = new NoticeBoardAdapter(data);
+        noticeData.clear();
+       // dataService.LoadAllRequiredData(new ProgressDialog(getActivity().getApplicationContext()));
+        loadNoticeBoardData();
+        adapter = new NoticeBoardAdapter(noticeData);
         recyclerView.setAdapter(adapter);
         return view;
+    }
+
+    private void loadNoticeBoardData(){
+        ArrayList<ClassRoom> classes = new ArrayList<>(dataService.getClasses());
+        for(ClassRoom cls:classes){
+            for(NoticeBoardBase nb: cls.getNotices()){
+                NoticeBoardViewModel noticeVm = new NoticeBoardViewModel();
+                noticeVm.setClassRoom(cls.getRoom() + " " + cls.getSubject());
+                noticeVm.setNotice(nb.getNotice());
+                noticeVm.setTeacher(cls.getTeacher().getFirstName() + " " + cls.getTeacher().getLastName());
+                noticeVm.setId(nb.getId());
+                noticeData.add(noticeVm);
+            }
+        }
     }
 
     @Override

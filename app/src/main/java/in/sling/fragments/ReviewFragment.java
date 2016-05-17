@@ -1,5 +1,6 @@
 package in.sling.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,8 +23,14 @@ import java.util.ArrayList;
 import in.sling.R;
 import in.sling.adapters.NoticeBoardAdapter;
 import in.sling.adapters.ReviewAdapter;
+import in.sling.models.ClassRoom;
+import in.sling.models.ClassRoomNested;
 import in.sling.models.NoticeBoardBase;
 import in.sling.models.Review;
+import in.sling.models.ReviewPopulated;
+import in.sling.models.ReviewViewModel;
+import in.sling.models.Student;
+import in.sling.services.DataService;
 
 /**
  * Created by abhishek on 18/02/16 at 6:18 PM.
@@ -32,8 +39,10 @@ public class ReviewFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView.Adapter adapter;
+    private DataService dataService;
 
     private static ArrayList<Review> data;
+    private static ArrayList<ReviewViewModel> reviewData = new ArrayList<>();
 
     public static ReviewFragment newInstance() {
 
@@ -48,6 +57,7 @@ public class ReviewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        dataService = new DataService(getActivity().getSharedPreferences("in.sling", Context.MODE_PRIVATE));
     }
 
     @Nullable
@@ -63,9 +73,37 @@ public class ReviewFragment extends Fragment {
         r.setReview("Test Review");
         r.setId("1");
         data.add(r);
-        adapter = new ReviewAdapter(data);
+        loadReviewData();
+        adapter = new ReviewAdapter(reviewData);
         recyclerView.setAdapter(adapter);
         return view;
+    }
+
+    private void loadReviewData(){
+        reviewData.clear();
+        if(dataService.getUserType().equalsIgnoreCase("parent")){
+            ArrayList<Student> wards = new ArrayList<>(dataService.getWardsParentView());
+            for(Student ward: wards){
+                for(Review review: ward.getReviews()){
+                    ReviewViewModel reviewVm = new ReviewViewModel();
+                    ClassRoom room = dataService.findClassRoom(review.getClassRoom());
+                    reviewVm.setClassRoom(room.getRoom() + " " + room.getSubject());
+                    reviewVm.setStudent(ward.getName());
+                    reviewVm.setReview(review.getReview());
+                    reviewData.add(reviewVm);
+                }
+            }
+        }
+        else if(dataService.getUserType().equalsIgnoreCase("teacher")){
+            ArrayList<ReviewPopulated> reviews = new ArrayList<>(dataService.getReviewsTeacherView());
+            for(ReviewPopulated review : reviews){
+                ReviewViewModel reviewVm = new ReviewViewModel();
+                reviewVm.setReview(review.getReview());
+                reviewVm.setStudent(review.getStudent().getName());
+                reviewVm.setClassRoom(review.getClassRoom().getRoom());
+                reviewData.add(reviewVm);
+            }
+        }
     }
 
     @Override
