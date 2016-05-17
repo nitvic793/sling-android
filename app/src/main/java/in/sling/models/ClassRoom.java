@@ -12,7 +12,7 @@ public class ClassRoom {
 
     @SerializedName("students")
     @Expose
-    private List<Student> students = new ArrayList<Student>();
+    private List<StudentNested> students = new ArrayList<StudentNested>();
     @SerializedName("notices")
     @Expose
     private List<NoticeBoardBase> notices = new ArrayList<NoticeBoardBase>();
@@ -45,7 +45,7 @@ public class ClassRoom {
      * @return
      * The students
      */
-    public List<Student> getStudents() {
+    public List<StudentNested> getStudents() {
         return students;
     }
 
@@ -54,7 +54,7 @@ public class ClassRoom {
      * @param students
      * The students
      */
-    public void setStudents(List<Student> students) {
+    public void setStudents(List<StudentNested> students) {
         this.students = students;
     }
 

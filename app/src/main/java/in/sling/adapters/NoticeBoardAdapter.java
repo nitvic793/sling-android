@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import in.sling.R;
 import in.sling.models.NoticeBoard;
 import in.sling.models.NoticeBoardBase;
+import in.sling.services.DataService;
 
 /**
  * Created by nitiv on 5/13/2016.
@@ -30,6 +31,7 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
             super(itemView);
             this.textViewName = (TextView) itemView.findViewById(R.id.teacherName);
             this.textViewVersion = (TextView) itemView.findViewById(R.id.noticeText);
+
             // this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
@@ -60,10 +62,11 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
         public int getItemCount() {
             return dataSet.size();
         }
+
     public NoticeBoardAdapter(ArrayList<NoticeBoardBase> data) {
         this.dataSet = data;
     }
-    }
+}
 
 
 

@@ -3,13 +3,18 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <Spinner
-        android:id="@+id/notice_class_spinner"
+        android:id="@+id/review_class_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <Spinner
+        android:id="@+id/review_student_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
         />
     <EditText
-        android:id="@+id/notice_edittext"
+        android:id="@+id/review_edit_text"
         android:imeOptions="actionDone"
         android:inputType="textMultiLine"
         android:layout_height="213dp"
@@ -18,7 +23,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Post Notice"
-        android:id="@+id/post_notice_btn"
+        android:text="Post Review"
+        android:id="@+id/post_review_btn"
         />
 </LinearLayout>

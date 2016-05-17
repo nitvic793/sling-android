@@ -73,7 +73,7 @@ public class ReviewFragment extends Fragment {
         inflater.inflate(R.menu.menu_student_review, menu);
         MenuItem item = menu.findItem(R.id.spinner);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-
+        MenuItem newReviewMenu = menu.findItem(R.id.menu_new_review);
         ArrayList<String> classList = new ArrayList<>();
         classList.add("Class V");
         classList.add("Class VI");
@@ -82,5 +82,15 @@ public class ReviewFragment extends Fragment {
         ArrayAdapter<String> karant_adapter = new ArrayAdapter<>(((AppCompatActivity)getActivity()).getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1, classList);
 
         spinner.setAdapter(karant_adapter);
+
+        newReviewMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container,
+                               ReviewEditorFragment.newInstance()).commit();
+                return true;
+            }
+        });
     }
 }

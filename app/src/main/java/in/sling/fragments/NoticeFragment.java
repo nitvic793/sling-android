@@ -1,7 +1,9 @@
 package in.sling.fragments;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,10 +24,19 @@ import android.widget.Toast;
 import android.support.v4.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import in.sling.R;
 import in.sling.adapters.NoticeBoardAdapter;
+import in.sling.models.ClassRoom;
+import in.sling.models.Data;
 import in.sling.models.NoticeBoardBase;
+import in.sling.services.DataService;
+import in.sling.services.RestFactory;
+import in.sling.services.SlingService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
@@ -36,6 +47,8 @@ public class NoticeFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView.Adapter adapter;
+    private SlingService service;
+    private DataService dataService;
 
     private static ArrayList<NoticeBoardBase> data;
     public static NoticeFragment newInstance() {
@@ -51,6 +64,10 @@ public class NoticeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        SharedPreferences preferences = getActivity().getSharedPreferences("in.sling", Context.MODE_PRIVATE);
+        String token = preferences.getString("token","");
+        service = RestFactory.createService(token);
+        dataService = new DataService(preferences);
     }
 
 
@@ -58,17 +75,13 @@ public class NoticeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        data = new ArrayList<>(dataService.getNotices());
         View view = inflater.inflate(R.layout.notice_recycler, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        data = new ArrayList<NoticeBoardBase>();
-        NoticeBoardBase nb = new NoticeBoardBase();
-        nb.setNotice("Test");
-        nb.setId("1");
-        data.add(nb);
         adapter = new NoticeBoardAdapter(data);
         recyclerView.setAdapter(adapter);
         return view;
@@ -79,6 +92,7 @@ public class NoticeFragment extends Fragment {
     {
         inflater.inflate(R.menu.menu_notice_board, menu);
         MenuItem newNoticeMenu = menu.findItem(R.id.menu_new_notice);
+
         newNoticeMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
