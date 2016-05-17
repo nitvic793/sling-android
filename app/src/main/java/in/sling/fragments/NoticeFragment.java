@@ -108,6 +108,11 @@ public class NoticeFragment extends Fragment {
                 return (int) (dtLeft.getMillis() - dtRight.getMillis());
             }
         });
+        for(int i=0,k=noticeData.size()-1;i<noticeData.size()/2;++i,k--){
+            NoticeBoardViewModel temp = noticeData.get(i);
+            noticeData.set(i,noticeData.get(k));
+            noticeData.set(k,temp);
+        }
         //noticeData.clear();
        //noticeData.addAll(Arrays.asList(noticeArray));
         adapter = new NoticeBoardAdapter(noticeData);

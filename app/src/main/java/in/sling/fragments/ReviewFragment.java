@@ -112,6 +112,7 @@ public class ReviewFragment extends Fragment {
         inflater.inflate(R.menu.menu_student_review, menu);
         MenuItem item = menu.findItem(R.id.spinner);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+        item.setVisible(false);
         MenuItem newReviewMenu = menu.findItem(R.id.menu_new_review);
         if(dataService.getUserType().equalsIgnoreCase("parent")){
             newReviewMenu.setVisible(false);
@@ -126,7 +127,6 @@ public class ReviewFragment extends Fragment {
             ArrayAdapter<ClassRoom> karant_adapter = new ArrayAdapter<>(((AppCompatActivity)getActivity()).getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1, classes);
 
             spinner.setAdapter(karant_adapter);
-
             newReviewMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {

@@ -24,6 +24,7 @@ import in.sling.models.Data;
 import in.sling.models.Token;
 import in.sling.models.User;
 import in.sling.models.UserPopulated;
+import in.sling.services.CustomCallback;
 import in.sling.services.DataService;
 import in.sling.services.RestFactory;
 import in.sling.services.SlingService;
@@ -93,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         final ProgressDialog progress = new ProgressDialog(this);
         final ProgressDialog dataLoadProgress = new ProgressDialog(this);
         progress.setTitle("Loading");
-        progress.setMessage("Wait logging in...");
+        progress.setMessage("Logging in...");
         progress.show();
 
         try
@@ -123,13 +124,21 @@ public class LoginActivity extends AppCompatActivity {
                         else{
                             storeUserType("unknown");
                         }
-                        dataService.LoadAllRequiredData(dataLoadProgress);
-                        service = RestFactory.createService(token);
                         progress.dismiss();
-                        startActivity(intent);
-
+                        progress.setTitle("Loading");
+                        progress.setMessage("Gathering required data...");
+                        progress.show();
+                        dataService.LoadAllRequiredData(new CustomCallback() {
+                            @Override
+                            public void onCallback() {
+                                startActivity(intent);
+                                progress.dismiss();
+                            }
+                        });
+                        service = RestFactory.createService(token);
                     }
-                    else{
+                    else
+                    {
                         progress.dismiss();
                         Toast.makeText(getApplicationContext(),"Invalid email/password",Toast.LENGTH_SHORT).show();
                         return;

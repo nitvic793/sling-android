@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import in.sling.R;
@@ -19,6 +20,8 @@ import in.sling.fragments.ChatFragment;
 import in.sling.fragments.NoticeEditorFragment;
 import in.sling.fragments.NoticeFragment;
 import in.sling.fragments.ReviewFragment;
+import in.sling.models.User;
+import in.sling.models.UserPopulated;
 import in.sling.services.DataService;
 
 public class HomeActivity extends AppCompatActivity
@@ -40,6 +43,19 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        UserPopulated user = dataService.getUser();
+        TextView userName = (TextView)header.findViewById(R.id.user_name);
+        userName.setText(user.getFirstName() + " " + user.getLastName());
+        TextView profileType = (TextView)header.findViewById(R.id.profile_type);
+        String type = "";
+        if(user.getIsParent()){
+            type="Parent Profile";
+        }
+        else if(user.getIsTeacher()){
+            type="Teacher Profile";
+        }
+        profileType.setText(type);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container,

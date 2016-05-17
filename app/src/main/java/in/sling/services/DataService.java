@@ -1,6 +1,7 @@
 package in.sling.services;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.ColorRes;
@@ -76,22 +77,20 @@ public class DataService {
     }
 
 
-    public void LoadAllRequiredData(ProgressDialog progress){
+    public void LoadAllRequiredData(final CustomCallback cb){
         //Parent - Wards, Classes, NoticeBoards, Reviews
         //Teacher - Classes, NoticeBoards,Reviews
-        progress.setTitle("Loading");
-        progress.setMessage("Requesting required data...");
-        progress.show();
         if(preferences.getString("userType","").equalsIgnoreCase("parent")){
-            LoadParentData(progress);
+            LoadParentData(cb);
         }
         else if(preferences.getString("userType","").equalsIgnoreCase("teacher")){
-            LoadTeacherData(progress);
+            LoadTeacherData(cb);
         }
     }
 
 
-    private void LoadParentData(final ProgressDialog progress){
+    private void LoadParentData(final CustomCallback cb){
+
         service.getWards().enqueue(new retrofit2.Callback<Data<GetWardsResponse>>() {
             @Override
             public void onResponse(Call<Data<GetWardsResponse>> call, Response<Data<GetWardsResponse>> response) {
@@ -119,27 +118,26 @@ public class DataService {
                 preferences.edit().putString("classes", gson.toJson(classes)).apply();
                 preferences.edit().putString("notices", gson.toJson(notices)).apply();
                 preferences.edit().putString("wards", gson.toJson(result.getWards())).apply();
-                progress.dismiss();
+                cb.onCallback();
                 Log.i("Test", response.message());
             }
 
             @Override
             public void onFailure(Call<Data<GetWardsResponse>> call, Throwable t) {
                 Log.e("Error", t.getMessage());
-                progress.dismiss();
             }
         });
     }
 
-    private void LoadTeacherData(final ProgressDialog progress){
+    private void LoadTeacherData(final CustomCallback cb){
 
-        service.getReviewsByTeacher(user.getId()).enqueue(new retrofit2.Callback<Data<List<ReviewPopulated>>>() {
+        service.getReviewsByTeacher(getUser().getId()).enqueue(new retrofit2.Callback<Data<List<ReviewPopulated>>>() {
             @Override
             public void onResponse(Call<Data<List<ReviewPopulated>>> call, Response<Data<List<ReviewPopulated>>> response) {
                 //Store all reviews
                 Log.e("Data", response.body().getMessage());
                 preferences.edit().putString("reviews",gson.toJson(response.body().getData())).apply();
-                loadTeacherClasses(progress);
+                loadTeacherClasses(cb);
             }
 
             @Override
@@ -186,8 +184,8 @@ public class DataService {
         return Arrays.asList(students);
     }
 
-    private void loadTeacherClasses(final ProgressDialog progress){
-        service.getClassRoomsByTeacher(user.getId()).enqueue(new retrofit2.Callback<Data<List<ClassRoom>>>() {
+    private void loadTeacherClasses(final CustomCallback cb){
+        service.getClassRoomsByTeacher(getUser().getId()).enqueue(new retrofit2.Callback<Data<List<ClassRoom>>>() {
             @Override
             public void onResponse(Call<Data<List<ClassRoom>>> call, Response<Data<List<ClassRoom>>> response) {
                 //Get students and Notices
@@ -224,13 +222,12 @@ public class DataService {
                 preferences.edit().putString("classes",gson.toJson(classes)).apply();
                 preferences.edit().putString("notices",gson.toJson(notices)).apply();
                 preferences.edit().putString("students",gson.toJson(students)).apply();
-                progress.dismiss();
+                cb.onCallback();
             }
 
             @Override
             public void onFailure(Call<Data<List<ClassRoom>>> call, Throwable t) {
                 Log.e("Error", t.getMessage());
-                progress.dismiss();
             }
         });
 
