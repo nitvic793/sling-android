@@ -226,6 +226,9 @@ public class StudentNested {
         this.id = id;
     }
 
+    public String toString(){
+        return name;
+    }
 }
 
 

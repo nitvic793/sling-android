@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import java.util.ArrayList;
+import java.util.List;
 
 import in.sling.R;
 import in.sling.adapters.NoticeBoardAdapter;
@@ -112,23 +113,30 @@ public class ReviewFragment extends Fragment {
         MenuItem item = menu.findItem(R.id.spinner);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
         MenuItem newReviewMenu = menu.findItem(R.id.menu_new_review);
-        ArrayList<String> classList = new ArrayList<>();
-        classList.add("Class V");
-        classList.add("Class VI");
-        classList.add("Class VII");
-
-        ArrayAdapter<String> karant_adapter = new ArrayAdapter<>(((AppCompatActivity)getActivity()).getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1, classList);
-
-        spinner.setAdapter(karant_adapter);
-
-        newReviewMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container,
-                               ReviewEditorFragment.newInstance()).commit();
-                return true;
+        if(dataService.getUserType().equalsIgnoreCase("parent")){
+            newReviewMenu.setVisible(false);
+        }
+        else{
+            List<String> values = new ArrayList<String>();
+            ArrayList<ClassRoom> classes = new ArrayList<>(dataService.getClasses());
+            for(ClassRoom cl: classes){
+                values.add(cl.getRoom() + " " + cl.getSubject());
             }
-        });
+
+            ArrayAdapter<ClassRoom> karant_adapter = new ArrayAdapter<>(((AppCompatActivity)getActivity()).getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1, classes);
+
+            spinner.setAdapter(karant_adapter);
+
+            newReviewMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.container,
+                                    ReviewEditorFragment.newInstance()).commit();
+                    return true;
+                }
+            });
+        }
+
     }
 }

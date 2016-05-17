@@ -12,6 +12,30 @@ import javax.annotation.Generated;
 @Generated("org.jsonschema2pojo")
 public class UserPopulated {
 
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
+    }
+
+    public void setWards(List<StudentNested> wards) {
+        this.wards = wards;
+    }
+
+    public List<ClassRoomNested> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<ClassRoomNested> classes) {
+        this.classes = classes;
+    }
+
+    @SerializedName("school")
+    @Expose
+    private School school;
+
     @SerializedName("wards")
     @Expose
     private List<StudentNested> wards = new ArrayList<StudentNested>();

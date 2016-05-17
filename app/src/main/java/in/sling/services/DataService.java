@@ -1,6 +1,7 @@
 package in.sling.services;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.ColorRes;
 import android.util.Log;
@@ -19,6 +20,7 @@ import java.util.Stack;
 
 import javax.security.auth.callback.Callback;
 
+import in.sling.activities.HomeActivity;
 import in.sling.adapters.NoticeBoardAdapter;
 import in.sling.models.ClassRoom;
 import in.sling.models.ClassRoomNested;
@@ -41,17 +43,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class DataService {
     SharedPreferences preferences;
+
     SlingService service;
     UserPopulated user;
     Gson gson = new Gson();
     ArrayList<StudentNested> students = new ArrayList<StudentNested>();
     ArrayList<ClassRoom> classes = new ArrayList<ClassRoom>();
     ArrayList<NoticeBoardBase> notices = new ArrayList<NoticeBoardBase>();
+    //Intent intent = new Intent(null, HomeActivity.class);
 
     public DataService(SharedPreferences pref){
         String token = pref.getString("token","");
         service = RestFactory.createService(token);
         preferences = pref;
+    }
+
+    public SlingService getAPIService() {
+        return service;
     }
 
     public void setUser(UserPopulated u){
@@ -185,12 +193,20 @@ public class DataService {
                 //Get students and Notices
                 classes.addAll(response.body().getData());
                 Map<String, ClassRoom> classRoomHashMap = new HashMap<String, ClassRoom>();
+                Map<String, StudentNested> studentMap = new HashMap<String, StudentNested>();
                 for(ClassRoom cl: classes){
                     classRoomHashMap.put(cl.getId(),cl);
                     notices.addAll(cl.getNotices());
                     students.addAll(cl.getStudents());
                 }
 
+                for(StudentNested stud: students){
+                    studentMap.put(stud.getId(),stud);
+                }
+                students.clear();
+                for(StudentNested stud: studentMap.values()){
+                    students.add(stud);
+                }
                 classes.clear();
                 for(ClassRoom cl: classRoomHashMap.values()){
                     classes.add(cl);

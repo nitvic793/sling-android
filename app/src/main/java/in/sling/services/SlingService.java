@@ -72,4 +72,7 @@ public interface SlingService{
 
     @GET("student/getwards")
     Call<Data<GetWardsResponse>> getWards();
+
+    @POST("noticeboard")
+    Call<Data<NoticeBoardBase>> createNotice(@Body NoticeBoard noticeBoard);
 }

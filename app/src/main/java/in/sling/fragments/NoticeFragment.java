@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.DateTimeKeyListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,13 +25,19 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.support.v4.app.FragmentManager;
 
+import org.joda.time.DateTime;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import in.sling.R;
 import in.sling.adapters.NoticeBoardAdapter;
 import in.sling.models.ClassRoom;
 import in.sling.models.Data;
+import in.sling.models.NoticeBoard;
 import in.sling.models.NoticeBoardBase;
 import in.sling.models.NoticeBoardViewModel;
 import in.sling.services.DataService;
@@ -79,9 +86,10 @@ public class NoticeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        data = new ArrayList<>(dataService.getNotices());
+        //data = new ArrayList<>(dataService.getNotices());
         View view = inflater.inflate(R.layout.notice_recycler, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -89,6 +97,19 @@ public class NoticeFragment extends Fragment {
         noticeData.clear();
        // dataService.LoadAllRequiredData(new ProgressDialog(getActivity().getApplicationContext()));
         loadNoticeBoardData();
+        Object[] noticeArray = noticeData.toArray();
+        Arrays.sort(noticeArray, new Comparator<Object>() {
+            @Override
+            public int compare(Object lhs, Object rhs) {
+                NoticeBoardViewModel left = (NoticeBoardViewModel) lhs;
+                NoticeBoardViewModel right = (NoticeBoardViewModel) rhs;
+                DateTime dtLeft = new DateTime(left.getCreatedAt());
+                DateTime dtRight = new DateTime(right.getCreatedAt());
+                return (int) (dtLeft.getMillis() - dtRight.getMillis());
+            }
+        });
+        //noticeData.clear();
+       //noticeData.addAll(Arrays.asList(noticeArray));
         adapter = new NoticeBoardAdapter(noticeData);
         recyclerView.setAdapter(adapter);
         return view;
@@ -103,6 +124,7 @@ public class NoticeFragment extends Fragment {
                 noticeVm.setNotice(nb.getNotice());
                 noticeVm.setTeacher(cls.getTeacher().getFirstName() + " " + cls.getTeacher().getLastName());
                 noticeVm.setId(nb.getId());
+                noticeVm.setCreatedAt(nb.getCreatedAt());
                 noticeData.add(noticeVm);
             }
         }

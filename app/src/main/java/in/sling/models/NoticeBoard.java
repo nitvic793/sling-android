@@ -10,7 +10,7 @@ public class NoticeBoard {
 
     @SerializedName("classRoom")
     @Expose
-    private ClassRoom classRoom;
+    private ClassRoomNested classRoom;
     @SerializedName("notice")
     @Expose
     private String notice;
@@ -29,7 +29,7 @@ public class NoticeBoard {
      * @return
      * The classRoom
      */
-    public ClassRoom getClassRoom() {
+    public ClassRoomNested getClassRoom() {
         return classRoom;
     }
 
@@ -38,7 +38,7 @@ public class NoticeBoard {
      * @param classRoom
      * The classRoom
      */
-    public void setClassRoom(ClassRoom classRoom) {
+    public void setClassRoom(ClassRoomNested classRoom) {
         this.classRoom = classRoom;
     }
 

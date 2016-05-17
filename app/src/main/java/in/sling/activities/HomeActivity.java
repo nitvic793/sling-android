@@ -1,5 +1,6 @@
 package in.sling.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -18,9 +19,11 @@ import in.sling.fragments.ChatFragment;
 import in.sling.fragments.NoticeEditorFragment;
 import in.sling.fragments.NoticeFragment;
 import in.sling.fragments.ReviewFragment;
+import in.sling.services.DataService;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    DataService dataService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +31,7 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
+        dataService = new DataService(getSharedPreferences("in.sling", Context.MODE_PRIVATE));
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -38,15 +40,12 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container,
                         NoticeFragment.newInstance()).commit();
         getSupportActionBar().setTitle("Notice Board");
-        getSupportActionBar().setSubtitle("School name here");
-
-
+        getSupportActionBar().setSubtitle(dataService.getUser().getSchool().getName());
     }
 
     @Override
@@ -73,7 +72,7 @@ public class HomeActivity extends AppCompatActivity
                     .replace(R.id.container,
                             NoticeFragment.newInstance()).commit();
             getSupportActionBar().setTitle("Notice Board");
-            getSupportActionBar().setSubtitle("School name here");
+            getSupportActionBar().setSubtitle(dataService.getUser().getSchool().getName());
 
         } else if (id == R.id.nav_chats) {
             fragmentManager.beginTransaction()

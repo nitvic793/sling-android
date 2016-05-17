@@ -9,6 +9,16 @@ public class NoticeBoardViewModel {
     private String clas;
     private String id;
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    private String createdAt;
+
     public String getId(){
         return id;
     }

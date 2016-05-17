@@ -202,4 +202,18 @@ public class ClassRoom {
         this.id = id;
     }
 
+    @Override
+    public String toString(){
+        return room + " (" + subject + ")";
+    }
+
+    public ClassRoomNested getNested(){
+        ClassRoomNested nested = new ClassRoomNested();
+        nested.setId(id);
+        nested.setRoom(room);
+        nested.setSchool(school.getId());
+        nested.setSubject(subject);
+        return nested;
+    }
+
 }

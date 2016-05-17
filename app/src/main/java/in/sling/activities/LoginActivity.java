@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import java.util.List;
 
 import in.sling.R;
@@ -40,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     DataService dataService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        JodaTimeAndroid.init(this);
         super.onCreate(savedInstanceState);
         registerIntent = new Intent(this,RegisterActivity.class);
         intent = new Intent(this,HomeActivity.class);
@@ -61,19 +64,6 @@ public class LoginActivity extends AppCompatActivity {
         });
         emailText = (EditText)findViewById(R.id.email);
         passwordText = (EditText)findViewById(R.id.password);
-
-        service = RestFactory.createService("JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IjU3MjcwODQ1MjdkZDlhYjQ0MzM1MjA1NiIsImlhdCI6MTQ2MzM4ODM3NywiZXhwIjoxNDYzNDc0Nzc3fQ.DGu4SymbFQy4GTOo7TdGIh9Yyq3jirjwmTd8T1WPSDme_3AQdYjLdE9o06ZsoAKqryCM3tmRSG3wJrxEWRmmeA");
-        service.getNoticeBoards("57270d14e36bd41100a0d815").enqueue(new Callback<Data<List<ClassRoomNested>>>() {
-            @Override
-            public void onResponse(Call<Data<List<ClassRoomNested>>> call, Response<Data<List<ClassRoomNested>>> response) {
-                Log.i("Data",response.body().getData().get(0).getNotices().get(0).getNotice());
-            }
-
-            @Override
-            public void onFailure(Call<Data<List<ClassRoomNested>>> call, Throwable t) {
-                Log.e("Error",t.getMessage());
-            }
-        });
     }
 
     private void storeToken(String token){
@@ -148,7 +138,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Data<Token>> call, Throwable t) {
-                    Log.e("Error",t.getMessage());
+                   // Log.e("Error",t.getMessage());
+                    Toast.makeText(getApplicationContext(),"Unable to make login request",Toast.LENGTH_SHORT).show();
                     progress.dismiss();
                 }
             });
