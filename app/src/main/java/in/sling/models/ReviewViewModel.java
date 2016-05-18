@@ -9,6 +9,26 @@ public class ReviewViewModel {
     private String student;
     private String classRoom;
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    private String createdAt;
+
+    public String getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(String teacher) {
+        this.teacher = teacher;
+    }
+
+    private String teacher;
+
     public String getReview() {
         return review;
     }

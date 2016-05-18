@@ -21,13 +21,20 @@
             <TextView
                 android:id="@+id/review_name"
                 style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingBottom="8dp"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingTop="16dp"
-                android:textAlignment="center"/>
+                android:textSize="18sp"
+                android:text="Test Name"
+                android:padding="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/review_date"
+                android:text="24 Nov 2016"
+                android:textSize="10sp"
+                android:padding="8dp"
+                />
 
             <View
                 android:layout_width="match_parent"

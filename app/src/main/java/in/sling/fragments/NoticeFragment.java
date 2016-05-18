@@ -105,14 +105,19 @@ public class NoticeFragment extends Fragment {
                 NoticeBoardViewModel right = (NoticeBoardViewModel) rhs;
                 DateTime dtLeft = new DateTime(left.getCreatedAt());
                 DateTime dtRight = new DateTime(right.getCreatedAt());
-                return (int) (dtLeft.getMillis() - dtRight.getMillis());
+                return (int) (dtRight.getMillis() - dtLeft.getMillis());
             }
         });
-        for(int i=0,k=noticeData.size()-1;i<noticeData.size()/2;++i,k--){
-            NoticeBoardViewModel temp = noticeData.get(i);
-            noticeData.set(i,noticeData.get(k));
-            noticeData.set(k,temp);
+        noticeData.clear();
+        for(Object obj: noticeArray){
+            NoticeBoardViewModel nb = (NoticeBoardViewModel)obj;
+            noticeData.add(nb);
         }
+//        for(int i=0,k=noticeData.size()-1;i<noticeData.size()/2;++i,k--){
+//            NoticeBoardViewModel temp = noticeData.get(i);
+//            noticeData.set(i,noticeData.get(k));
+//            noticeData.set(k,temp);
+//        }
         //noticeData.clear();
        //noticeData.addAll(Arrays.asList(noticeArray));
         adapter = new NoticeBoardAdapter(noticeData);
@@ -140,6 +145,10 @@ public class NoticeFragment extends Fragment {
     {
         inflater.inflate(R.menu.menu_notice_board, menu);
         MenuItem newNoticeMenu = menu.findItem(R.id.menu_new_notice);
+
+        if(dataService.getUserType().equalsIgnoreCase("parent")){
+            newNoticeMenu.setVisible(false);
+        }
 
         newNoticeMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override

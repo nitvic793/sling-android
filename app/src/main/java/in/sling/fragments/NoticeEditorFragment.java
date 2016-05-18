@@ -83,9 +83,9 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
                 SlingService api = dataService.getAPIService();
                 String notice = noticeText.getText().toString();
                 ClassRoom cls = (ClassRoom)classSpinner.getSelectedItem();
-                NoticeBoard noticeBoard = new NoticeBoard();
+                NoticeBoardBase noticeBoard = new NoticeBoardBase();
                 noticeBoard.setNotice(notice);
-                noticeBoard.setClassRoom(cls.getNested());
+                noticeBoard.setClassRoom(cls.getNested().getId());
                 api.createNotice(noticeBoard).enqueue(new Callback<Data<NoticeBoardBase>>() {
                     @Override
                     public void onResponse(Call<Data<NoticeBoardBase>> call, Response<Data<NoticeBoardBase>> response) {

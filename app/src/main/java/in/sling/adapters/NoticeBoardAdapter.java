@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 import java.util.ArrayList;
 
 import in.sling.R;
@@ -27,12 +30,13 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
         TextView textViewName;
         TextView textViewVersion;
         ImageView imageViewIcon;
+        TextView textDate;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             this.textViewName = (TextView) itemView.findViewById(R.id.teacherName);
             this.textViewVersion = (TextView) itemView.findViewById(R.id.noticeText);
-
+            textDate = (TextView) itemView.findViewById(R.id.notice_date);
             // this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
@@ -53,7 +57,8 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
         TextView textViewName = holder.textViewName;
         TextView textViewVersion = holder.textViewVersion;
         ImageView imageView = holder.imageViewIcon;
-
+        DateTime dt = new DateTime(dataSet.get(position).getCreatedAt());
+        holder.textDate.setText(dt.toLocalDate().toString(DateTimeFormat.forPattern("dd MMM yyyy")));
         textViewName.setText(dataSet.get(position).getClassRoom());
         textViewVersion.setText(dataSet.get(position).getNotice());
     }

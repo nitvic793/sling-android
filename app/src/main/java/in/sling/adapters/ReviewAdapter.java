@@ -8,6 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 
 import in.sling.R;
@@ -25,11 +29,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
 
         TextView textViewName;
         TextView textViewVersion;
-
+        TextView textDate;
         public MyViewHolder(View itemView) {
             super(itemView);
             this.textViewName = (TextView) itemView.findViewById(R.id.review_name);
             this.textViewVersion = (TextView) itemView.findViewById(R.id.review_text);
+            textDate = (TextView) itemView.findViewById(R.id.review_date);
             // this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
@@ -51,6 +56,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         TextView textViewVersion = holder.textViewVersion;
         textViewName.setText(dataSet.get(position).getStudent() + "(" + dataSet.get(position).getClassRoom() + ")");
         textViewVersion.setText(dataSet.get(position).getReview());
+        DateTime dt = new DateTime(dataSet.get(position).getCreatedAt());
+        holder.textDate.setText(dt.toLocalDate().toString(DateTimeFormat.forPattern("dd MMM yyyy")));
     }
 
 

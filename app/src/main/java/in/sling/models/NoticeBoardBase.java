@@ -8,9 +8,9 @@ import com.google.gson.annotations.SerializedName;
 @Generated("org.jsonschema2pojo")
 public class NoticeBoardBase {
 
-//    @SerializedName("classRoom")
-//    @Expose
-//    private String classRoom;
+    @SerializedName("classRoom")
+    @Expose
+    private String classRoom;
     @SerializedName("notice")
     @Expose
     private String notice;
@@ -29,18 +29,18 @@ public class NoticeBoardBase {
      * @return
      * The classRoom
      */
-//    public String getClassRoom() {
-//        return classRoom;
-//    }
+    public String getClassRoom() {
+        return classRoom;
+    }
 
     /**
      *
      * @param classRoom
      * The classRoom
      */
-//    public void setClassRoom(String classRoom) {
-//        this.classRoom = classRoom;
-//    }
+    public void setClassRoom(String classRoom) {
+        this.classRoom = classRoom;
+    }
 
     /**
      *

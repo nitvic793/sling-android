@@ -74,7 +74,7 @@ public interface SlingService{
     Call<Data<GetWardsResponse>> getWards();
 
     @POST("noticeboard")
-    Call<Data<NoticeBoardBase>> createNotice(@Body NoticeBoard noticeBoard);
+    Call<Data<NoticeBoardBase>> createNotice(@Body NoticeBoardBase noticeBoard);
 
     @POST("review")
     Call<Data<Review>> createReview(@Body Review review);

@@ -51,6 +51,7 @@ public class DataService {
     ArrayList<StudentNested> students = new ArrayList<StudentNested>();
     ArrayList<ClassRoom> classes = new ArrayList<ClassRoom>();
     ArrayList<NoticeBoardBase> notices = new ArrayList<NoticeBoardBase>();
+    ArrayList<User> teachers = new ArrayList<>();
     //Intent intent = new Intent(null, HomeActivity.class);
 
     public DataService(SharedPreferences pref){
@@ -73,7 +74,7 @@ public class DataService {
     }
 
     public String getUserType(){
-       return preferences.getString("userType","");
+       return preferences.getString("userType", "");
     }
 
 
@@ -100,6 +101,7 @@ public class DataService {
                 for (ClassRoom cl : classes) {
                     classRoomHashMap.put(cl.getId(), cl);
                     notices.addAll(cl.getNotices());
+                    teachers.add(cl.getTeacher());
                 }
 
 //                classes.clear();
@@ -115,6 +117,7 @@ public class DataService {
 //                for(NoticeBoardBase nb: noticeMap.values()){
 //                    notices.add(nb);
 //                }
+                preferences.edit().putString("teachers", gson.toJson(teachers)).apply();
                 preferences.edit().putString("classes", gson.toJson(classes)).apply();
                 preferences.edit().putString("notices", gson.toJson(notices)).apply();
                 preferences.edit().putString("wards", gson.toJson(result.getWards())).apply();
@@ -152,6 +155,17 @@ public class DataService {
         return Arrays.asList(cls);
     }
 
+    public User findTeacher(String id){
+        User[] teachers = gson.fromJson(preferences.getString("teachers", ""), User[].class);
+        User teacher = new User();
+        for(User t:teachers){
+            if(t.getId().equalsIgnoreCase(id)){
+                teacher = t;
+                break;
+            }
+        }
+        return teacher;
+    }
 
     public List<NoticeBoardBase> getNotices(){
         Log.i("Data", preferences.getString("notices", ""));

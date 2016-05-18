@@ -18,7 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import in.sling.R;
@@ -27,10 +32,12 @@ import in.sling.adapters.ReviewAdapter;
 import in.sling.models.ClassRoom;
 import in.sling.models.ClassRoomNested;
 import in.sling.models.NoticeBoardBase;
+import in.sling.models.NoticeBoardViewModel;
 import in.sling.models.Review;
 import in.sling.models.ReviewPopulated;
 import in.sling.models.ReviewViewModel;
 import in.sling.models.Student;
+import in.sling.models.User;
 import in.sling.services.DataService;
 
 /**
@@ -69,11 +76,6 @@ public class ReviewFragment extends Fragment {
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        data = new ArrayList<>();
-        Review r = new Review();
-        r.setReview("Test Review");
-        r.setId("1");
-        data.add(r);
         loadReviewData();
         adapter = new ReviewAdapter(reviewData);
         recyclerView.setAdapter(adapter);
@@ -91,6 +93,9 @@ public class ReviewFragment extends Fragment {
                     reviewVm.setClassRoom(room.getRoom() + " " + room.getSubject());
                     reviewVm.setStudent(ward.getName());
                     reviewVm.setReview(review.getReview());
+                    User teacher = dataService.findTeacher(review.getTeacher());
+                    reviewVm.setTeacher(teacher.getFirstName() + " " + teacher.getLastName());
+                    reviewVm.setCreatedAt(review.getCreatedAt());
                     reviewData.add(reviewVm);
                 }
             }
@@ -102,8 +107,26 @@ public class ReviewFragment extends Fragment {
                 reviewVm.setReview(review.getReview());
                 reviewVm.setStudent(review.getStudent().getName());
                 reviewVm.setClassRoom(review.getClassRoom().getRoom());
+                reviewVm.setTeacher(review.getTeacher().getFirstName() + " " + review.getTeacher().getLastName());
+                reviewVm.setCreatedAt(review.getCreatedAt());
                 reviewData.add(reviewVm);
             }
+        }
+        Object[] reviewArray = reviewData.toArray();
+        Arrays.sort(reviewArray, new Comparator<Object>() {
+            @Override
+            public int compare(Object lhs, Object rhs) {
+                ReviewViewModel left = (ReviewViewModel) lhs;
+                ReviewViewModel right = (ReviewViewModel) rhs;
+                DateTime dtLeft = new DateTime(left.getCreatedAt());
+                DateTime dtRight = new DateTime(right.getCreatedAt());
+                return (int) (dtRight.getMillis() - dtLeft.getMillis());
+            }
+        });
+        reviewData.clear();
+        for(Object obj: reviewArray){
+            ReviewViewModel nb = (ReviewViewModel)obj;
+            reviewData.add(nb);
         }
     }
 
