@@ -1,10 +1,14 @@
 package in.sling.activities;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,8 +16,20 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import in.sling.R;
+import in.sling.models.Data;
+import in.sling.models.OtpResponse;
+import in.sling.models.Token;
+import in.sling.models.UserPopulated;
+import in.sling.services.CustomCallback;
+import in.sling.services.DataService;
+import in.sling.services.RestFactory;
+import in.sling.services.SlingService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A login screen that offers login via email/password.
@@ -35,7 +51,9 @@ public class RegisterActivity extends AppCompatActivity {
     // UI references.
     private EditText mEmailView;
     private EditText mMobileNumberView;
-
+    private TextView mResendOtp;
+    private EditText mOtp;
+    DataService dataService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +61,8 @@ public class RegisterActivity extends AppCompatActivity {
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
         mMobileNumberView = (EditText) findViewById(R.id.mobile_number);
+        mResendOtp = (TextView)findViewById(R.id.resend_otp_textview);
+        mOtp = (EditText)findViewById(R.id.otp);
         mMobileNumberView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -65,11 +85,133 @@ public class RegisterActivity extends AppCompatActivity {
         findViewById(R.id.register_finish_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
-                startActivity(intent);
+                verifyOtp(mMobileNumberView.getText().toString(), mOtp.getText().toString(),
+                        new CustomCallback() {
+                            @Override
+                            public void onCallback() {
+                                Toast.makeText(getApplicationContext(),"Log in...", Toast.LENGTH_SHORT).show();
+                                // Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+                               // startActivity(intent);
+                            }
+                        }, null);
             }
         });
 
+        mResendOtp.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                generateOtp(mMobileNumberView.getText().toString(), null, null);
+            }
+        });
+
+    }
+
+    private void storeToken(String token){
+        SharedPreferences preferences = getSharedPreferences("in.sling", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("token", "JWT " + token);
+        editor.apply();
+        preferences.getString("token", "");
+        Log.i("TokenSP", preferences.getString("token", ""));
+    }
+
+    private void storeUserId(String userId){
+        SharedPreferences preferences = getSharedPreferences("in.sling", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("userId", userId);
+        editor.apply();
+    }
+
+    private void storeUserType(String type){
+        SharedPreferences preferences = getSharedPreferences("in.sling", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("userType", type);
+        editor.apply();
+    }
+
+    public void verifyOtp(String phoneNumber, String otp, final CustomCallback onSuccess, final CustomCallback onFailure){
+        SlingService api = RestFactory.createService();
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Verifying OTP");
+        progressDialog.show();
+        api.verify(phoneNumber,otp).enqueue(new Callback<Data<Token>>() {
+            @Override
+            public void onResponse(Call<Data<Token>> call, Response<Data<Token>> response) {
+
+                if(response.body()!=null) {
+                    String token = response.body().getData().getToken();
+                    Log.i("Token", response.body().getMessage());
+                    storeToken(response.body().getData().getToken());
+                    storeUserId(response.body().getData().getUser().getId());
+                    dataService = new DataService(getSharedPreferences("in.sling", Context.MODE_PRIVATE));
+                    dataService.setUser(response.body().getData().getUser());
+                    UserPopulated x = dataService.getUser();
+                    if(response.body().getData().getUser().getIsParent()){
+                        storeUserType("parent");
+                    }
+                    else if(response.body().getData().getUser().getIsTeacher())
+                    {
+                        storeUserType("teacher");
+                    }
+                    else{
+                        storeUserType("unknown");
+                    }
+                    progressDialog.dismiss();
+                    progressDialog.setTitle("Loading");
+                    progressDialog.setMessage("Gathering required data...");
+                    progressDialog.show();
+                    dataService.LoadAllRequiredData(new CustomCallback() {
+                        @Override
+                        public void onCallback() {
+                            if(onSuccess!=null){
+                                onSuccess.onCallback();
+                            }
+                            progressDialog.dismiss();
+                        }
+                    });
+                }
+                else
+                {
+                    progressDialog.dismiss();
+                    Toast.makeText(getApplicationContext(),"Invalid data",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Data<Token>> call, Throwable t) {
+                if(onFailure!=null){
+                    onFailure.onCallback();
+                }
+                Toast.makeText(getApplicationContext(),"OTP could not be verified", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    private void generateOtp(String phoneNumber, final CustomCallback callback, final CustomCallback errorCallback){
+        SlingService api = RestFactory.createService();
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Requesting OTP");
+        progressDialog.show();
+        api.generateOtp(phoneNumber).enqueue(new Callback<Data<OtpResponse>>() {
+            @Override
+            public void onResponse(Call<Data<OtpResponse>> call, Response<Data<OtpResponse>> response) {
+                if(callback!=null)
+                callback.onCallback();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Data<OtpResponse>> call, Throwable t) {
+                if(errorCallback!=null)
+                errorCallback.onCallback();
+                Toast.makeText(getApplicationContext(),"Could not send OTP", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+        });
     }
 
     /**
@@ -79,9 +221,7 @@ public class RegisterActivity extends AppCompatActivity {
      */
     private void attemptLogin() {
 
-        findViewById(R.id.layout_register).setVisibility(View.GONE);
-        findViewById(R.id.layout_otp).setVisibility(View.VISIBLE);
-
+        SlingService api =  RestFactory.createService();
         if (mAuthTask != null) {
             return;
         }
@@ -92,6 +232,18 @@ public class RegisterActivity extends AppCompatActivity {
 
         boolean cancel = false;
         View focusView = null;
+
+        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+            Toast.makeText(getApplicationContext(),"Field cannot be empty",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        generateOtp(password, new CustomCallback() {
+                    @Override
+                    public void onCallback() {
+                        findViewById(R.id.layout_register).setVisibility(View.GONE);
+                        findViewById(R.id.layout_otp).setVisibility(View.VISIBLE);
+                    }
+                }, null);
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {

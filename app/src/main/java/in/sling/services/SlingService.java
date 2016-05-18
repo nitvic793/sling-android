@@ -7,6 +7,7 @@ import in.sling.models.Data;
 import in.sling.models.GetWardsResponse;
 import in.sling.models.NoticeBoard;
 import in.sling.models.NoticeBoardBase;
+import in.sling.models.OtpResponse;
 import in.sling.models.Review;
 import in.sling.models.ReviewPopulated;
 import in.sling.models.School;
@@ -78,4 +79,11 @@ public interface SlingService{
 
     @POST("review")
     Call<Data<Review>> createReview(@Body Review review);
+
+    @POST("otp/generateOtp")
+    Call<Data<OtpResponse>> generateOtp(@Query("phoneNumber") String phoneNumber);
+
+    @POST("otp/verify")
+    Call<Data<Token>> verify(@Query("phoneNumber") String phoneNumber, @Query("otp")String otp);
+
 }
