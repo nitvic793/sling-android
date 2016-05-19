@@ -20,6 +20,7 @@ import in.sling.fragments.ChatFragment;
 import in.sling.fragments.NoticeEditorFragment;
 import in.sling.fragments.NoticeFragment;
 import in.sling.fragments.ReviewFragment;
+import in.sling.fragments.SettingsFragement;
 import in.sling.models.User;
 import in.sling.models.UserPopulated;
 import in.sling.services.DataService;
@@ -106,7 +107,12 @@ public class HomeActivity extends AppCompatActivity
             getSupportActionBar().setSubtitle(null);
 
         } else if (id == R.id.nav_settings) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container,
+                            new SettingsFragement()).commit();
 
+            getSupportActionBar().setTitle("Settings");
+            getSupportActionBar().setSubtitle(null);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

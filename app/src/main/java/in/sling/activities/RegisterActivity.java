@@ -90,6 +90,9 @@ public class RegisterActivity extends AppCompatActivity {
                             @Override
                             public void onCallback() {
                                 Toast.makeText(getApplicationContext(),"Log in...", Toast.LENGTH_SHORT).show();
+
+                                findViewById(R.id.layout_otp).setVisibility(View.GONE);
+                                findViewById(R.id.layout_user).setVisibility(View.VISIBLE);
                                 // Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
                                // startActivity(intent);
                             }

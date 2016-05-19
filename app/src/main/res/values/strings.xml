@@ -25,6 +25,8 @@
     <string name="register_otp_message">We have sent an OTP to your mobile number and e-mail ID</string>
     <string name="prompt_enter_otp">Enter OTP</string>
     <string name="register_button_finish">Finish</string>
+    <string name="register_button_confirm">Confirm</string>
+
     <string name="nav_notice_board">Notice Board</string>
     <string name="nav_chats">Chats</string>
     <string name="nav_student_reviews">Student Reviews</string>
