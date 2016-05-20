@@ -72,6 +72,8 @@ public class ReviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.review_recycler, container, false);
+        view.setBackgroundColor(getResources().getColor(android.R.color.white));
+
         recyclerView = (RecyclerView) view.findViewById(R.id.review_rv);
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);

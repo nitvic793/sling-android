@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -88,6 +89,8 @@ public class NoticeFragment extends Fragment {
 
         //data = new ArrayList<>(dataService.getNotices());
         View view = inflater.inflate(R.layout.notice_recycler, container, false);
+        view.setBackgroundColor(getResources().getColor(android.R.color.white));
+
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
 
         recyclerView.setHasFixedSize(true);

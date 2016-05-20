@@ -2,23 +2,33 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="PreferenceCategory A">
+        android:title="Account Settings" />
 
-        <CheckBoxPreference
-            android:key="checkbox_preference"
-            android:title="title_checkbox_preference"
-            android:summary="summary_checkbox_preference" />
-
-    </PreferenceCategory>
+        <SwitchPreference
+            android:key="office_hours"
+            android:title="Office Hours"
+            android:summary="Check if you do not want to be disturbed" />
+    <PreferenceScreen android:title="Change Password">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="in.sling"
+            android:targetClass="in.sling.activities.UpdatePasswordActivity"
+            />
+    </PreferenceScreen>
+    <PreferenceScreen android:title="My Profile">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="in.sling"
+            android:targetClass="in.sling.activities.UpdatePasswordActivity"
+            />
+    </PreferenceScreen>
 
     <PreferenceCategory
-        android:title="PreferenceCategory B">
+        android:title="School Settings">
 
-        <EditTextPreference
-            android:key="edittext_preference"
-            android:title="title_edittext_preference"
-            android:summary="summary_edittext_preference"
-            android:dialogTitle="dialog_title_edittext_preference" />
+        <PreferenceScreen android:title="Class Details">
+
+        </PreferenceScreen>
 
     </PreferenceCategory>
 

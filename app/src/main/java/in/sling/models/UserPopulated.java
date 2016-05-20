@@ -93,6 +93,17 @@ public class UserPopulated {
     @Expose
     private String id;
 
+    public String getQuickBloxId() {
+        return quickBloxId;
+    }
+
+    public void setQuickBloxId(String quickBloxId) {
+        this.quickBloxId = quickBloxId;
+    }
+
+    @SerializedName("quickBloxId")
+    @Expose
+    private String quickBloxId;
 
     public List<StudentNested> getWards(){
         return wards;

@@ -61,6 +61,8 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.notice_textedit, container, false);
+        rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
+
         getActivity().setTitle("New Notice");
         Button btn = (Button)rootView.findViewById(R.id.post_notice_btn);
         noticeText = (EditText)rootView.findViewById(R.id.notice_edittext);
@@ -95,8 +97,8 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
                         dataService.LoadAllRequiredData(new CustomCallback() {
                             @Override
                             public void onCallback() {
-                               // progress.dismiss();
-                                Log.i("Check","Done");
+                                // progress.dismiss();
+                                Log.i("Check", "Done");
                                 getFragmentManager().beginTransaction()
                                         .replace(R.id.container,
                                                 NoticeFragment.newInstance()).commit();

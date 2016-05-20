@@ -18,9 +18,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import in.sling.R;
+import in.sling.models.ClassRoomNested;
 import in.sling.models.Data;
 import in.sling.models.OtpResponse;
+import in.sling.models.StudentNested;
 import in.sling.models.Token;
 import in.sling.models.UserPopulated;
 import in.sling.services.CustomCallback;
@@ -53,6 +57,9 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mMobileNumberView;
     private TextView mResendOtp;
     private EditText mOtp;
+    private TextView mConfirmName;
+    private TextView mConfirmSchool;
+    private TextView mConfirmStudentClasses;
     DataService dataService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,10 @@ public class RegisterActivity extends AppCompatActivity {
         mMobileNumberView = (EditText) findViewById(R.id.mobile_number);
         mResendOtp = (TextView)findViewById(R.id.resend_otp_textview);
         mOtp = (EditText)findViewById(R.id.otp);
+        mConfirmName = (TextView) findViewById(R.id.confirm_name);
+        mConfirmSchool = (TextView) findViewById(R.id.confirm_school);
+        mConfirmStudentClasses = (TextView) findViewById(R.id.confirm_classes_students);
+
         mMobileNumberView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -81,6 +92,15 @@ public class RegisterActivity extends AppCompatActivity {
                 attemptLogin();
             }
         });
+        Button mRegisterConfirm = (Button) findViewById(R.id.register_confirm);
+
+        mRegisterConfirm.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+                startActivity(intent);
+            }
+        });
 
         findViewById(R.id.register_finish_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -89,12 +109,12 @@ public class RegisterActivity extends AppCompatActivity {
                         new CustomCallback() {
                             @Override
                             public void onCallback() {
-                                Toast.makeText(getApplicationContext(),"Log in...", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Log in...", Toast.LENGTH_SHORT).show();
 
                                 findViewById(R.id.layout_otp).setVisibility(View.GONE);
                                 findViewById(R.id.layout_user).setVisibility(View.VISIBLE);
                                 // Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
-                               // startActivity(intent);
+                                // startActivity(intent);
                             }
                         }, null);
             }
@@ -150,12 +170,25 @@ public class RegisterActivity extends AppCompatActivity {
                     dataService = new DataService(getSharedPreferences("in.sling", Context.MODE_PRIVATE));
                     dataService.setUser(response.body().getData().getUser());
                     UserPopulated x = dataService.getUser();
+                    mConfirmName.setText(x.getFirstName() + " " + x.getLastName());
+                    if(x.getSchool()!=null)
+                    mConfirmSchool.setText(x.getSchool().getName());
                     if(response.body().getData().getUser().getIsParent()){
                         storeUserType("parent");
+                        String wards = "";
+                        for(StudentNested n:x.getWards()){
+                            wards += n.getName() + " ";
+                        }
+                        mConfirmStudentClasses.setText(wards);
                     }
                     else if(response.body().getData().getUser().getIsTeacher())
                     {
                         storeUserType("teacher");
+                        String classes = "";
+                        for(ClassRoomNested n:x.getClasses()){
+                            classes += n.getRoom() + " ";
+                        }
+                        mConfirmStudentClasses.setText(classes);
                     }
                     else{
                         storeUserType("unknown");

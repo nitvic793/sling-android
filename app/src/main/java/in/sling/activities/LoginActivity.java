@@ -13,6 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quickblox.auth.QBAuth;
+import com.quickblox.auth.model.QBSession;
+import com.quickblox.core.QBEntityCallback;
+import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.users.model.QBUser;
+
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.util.List;
@@ -29,6 +35,7 @@ import in.sling.services.DataService;
 import in.sling.services.RestFactory;
 import in.sling.services.SlingService;
 
+import in.sling.utils.Chat;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,10 +51,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         JodaTimeAndroid.init(this);
+        service = RestFactory.createService();
         super.onCreate(savedInstanceState);
         registerIntent = new Intent(this,RegisterActivity.class);
         intent = new Intent(this,HomeActivity.class);
+        SharedPreferences preferences = getSharedPreferences("in.sling", Context.MODE_PRIVATE);
 
+        if(preferences.getString("token","")!=null){
+            
+        }
         setContentView(R.layout.activity_login);
         Button button = (Button)findViewById(R.id.register_continue);
         button.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                         else{
                             storeUserType("unknown");
                         }
+                        Chat.initialize(x);
                         progress.dismiss();
                         progress.setTitle("Loading");
                         progress.setMessage("Gathering required data...");
@@ -131,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                         dataService.LoadAllRequiredData(new CustomCallback() {
                             @Override
                             public void onCallback() {
+
                                 startActivity(intent);
                                 progress.dismiss();
                             }

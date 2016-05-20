@@ -58,6 +58,7 @@ public class ReviewEditorFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.review_textedit, container, false);
+        rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
 
         getActivity().setTitle("New Notice");
         Button btn = (Button)rootView.findViewById(R.id.post_review_btn);
@@ -79,7 +80,7 @@ public class ReviewEditorFragment extends android.support.v4.app.Fragment {
                         dataService.LoadAllRequiredData(new CustomCallback() {
                             @Override
                             public void onCallback() {
-                                Log.i("Check","Done post");
+                                Log.i("Check", "Done post");
                                 progressDialog.dismiss();
                                 getFragmentManager().beginTransaction()
                                         .replace(R.id.container,

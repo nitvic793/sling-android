@@ -14,11 +14,13 @@ import in.sling.models.School;
 import in.sling.models.Student;
 import in.sling.models.Token;
 import in.sling.models.User;
+import in.sling.models.UserPopulated;
 import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.Call;
 /**
@@ -85,5 +87,8 @@ public interface SlingService{
 
     @POST("otp/verify")
     Call<Data<Token>> verify(@Query("phoneNumber") String phoneNumber, @Query("otp")String otp);
+
+    @POST("user/{id}")
+    Call<Data<UserPopulated>> updateQuickBloxId(@Path("id")String id, @Query("quickbloxId")String quickbloxId);
 
 }
