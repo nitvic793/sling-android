@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import in.sling.fragments.ChatDialogsFragment;
+import in.sling.fragments.ChatUsersFragment;
 import in.sling.fragments.PlaceHolderFragment;
 
 /**
@@ -17,12 +19,15 @@ public class ChatPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return PlaceHolderFragment.newInstance(position);
+        if(position==0){
+            return ChatDialogsFragment.newInstance(position);
+        }
+        else return ChatUsersFragment.newInstance(position);
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 
 
@@ -30,11 +35,9 @@ public class ChatPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
 
         if (position == 0) {
-            return "ALL";
-        } else if (position == 1) {
-            return "PARENT";
+            return "CHATS";
         } else {
-            return "TEACHER";
+            return "CONTACTS";
         }
     }
 }

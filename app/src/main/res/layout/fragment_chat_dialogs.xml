@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+            <TextView
+                android:padding="10dp"
+                android:paddingBottom="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Test"
+                android:id="@+id/chat_dialog_head"
+                android:textSize="20sp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/chat_dialog_head"
+        android:id="@+id/chat_dialog_date"
+        android:padding="4dp"
+        android:textSize="12sp"
+        android:layout_marginTop="10dp"
+        android:gravity="right"
+        android:textAlignment="gravity"
+        android:text="24 Nov 2016"/>
+    <TextView
+        android:padding="10dp"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chat_dialog_head"
+        android:textSize="16sp"
+        android:id="@+id/chat_dialog_text"
+        android:text="Last text"/>
+</RelativeLayout>

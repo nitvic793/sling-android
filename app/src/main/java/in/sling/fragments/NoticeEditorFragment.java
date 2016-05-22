@@ -78,9 +78,10 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // final ProgressDialog progress = new ProgressDialog(getActivity());
-               // progress.setTitle("Posting");
-               // progress.setMessage("Creating new notice...");
+               final ProgressDialog progress = new ProgressDialog(getActivity());
+               progress.setTitle("Posting");
+                progress.setMessage("Creating new notice...");
+                progress.show();
                 Log.e("Data", "Test");
                 SlingService api = dataService.getAPIService();
                 String notice = noticeText.getText().toString();
@@ -91,25 +92,26 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
                 api.createNotice(noticeBoard).enqueue(new Callback<Data<NoticeBoardBase>>() {
                     @Override
                     public void onResponse(Call<Data<NoticeBoardBase>> call, Response<Data<NoticeBoardBase>> response) {
-                       // progress.dismiss();
-                       // progress.setTitle("Loading");
-                      //  progress.setMessage("Refreshing Data...");
+                        progress.dismiss();
+                        progress.setTitle("Loading");
+                        progress.setMessage("Refreshing Data...");
+                        progress.show();
                         dataService.LoadAllRequiredData(new CustomCallback() {
                             @Override
                             public void onCallback() {
-                                // progress.dismiss();
+                                progress.dismiss();
                                 Log.i("Check", "Done");
                                 getFragmentManager().beginTransaction()
                                         .replace(R.id.container,
                                                 NoticeFragment.newInstance()).commit();
-                                Toast.makeText(rootView.getContext(), "Done", Toast.LENGTH_SHORT);
+                                Toast.makeText(rootView.getContext(), "Done", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
 
                     @Override
                     public void onFailure(Call<Data<NoticeBoardBase>> call, Throwable t) {
-                        Toast.makeText(getActivity().getApplicationContext(), "Error: Could not post notice!", Toast.LENGTH_SHORT);
+                        Toast.makeText(getActivity().getApplicationContext(), "Error: Could not post notice!", Toast.LENGTH_SHORT).show();
                        // progress.dismiss();
                     }
                 });

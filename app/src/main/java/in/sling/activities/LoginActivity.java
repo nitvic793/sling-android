@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         if(preferences.getString("token","")!=null){
             
         }
+        DataService.initialize(preferences);
         setContentView(R.layout.activity_login);
         Button button = (Button)findViewById(R.id.register_continue);
         button.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         });
         emailText = (EditText)findViewById(R.id.email);
         passwordText = (EditText)findViewById(R.id.password);
+
     }
 
     private void storeToken(String token){
@@ -136,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                         else{
                             storeUserType("unknown");
                         }
-                        Chat.initialize(x);
+                        Chat.initialize(x, getSharedPreferences("in.sling",Context.MODE_PRIVATE));
                         progress.dismiss();
                         progress.setTitle("Loading");
                         progress.setMessage("Gathering required data...");

@@ -91,4 +91,7 @@ public interface SlingService{
     @POST("user/{id}")
     Call<Data<UserPopulated>> updateQuickBloxId(@Path("id")String id, @Query("quickbloxId")String quickbloxId);
 
+    @GET("user")
+    Call<Data<List<UserPopulated>>> getAllParents(@Query("school")String school,@Query("isParent")boolean isParent);
+
 }

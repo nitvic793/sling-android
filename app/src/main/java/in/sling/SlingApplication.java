@@ -30,6 +30,7 @@ public class SlingApplication extends Application {
 
     @Override
     public void onCreate() {
+
         super.onCreate();
         Log.i("App","Created");
         QBSettings.getInstance().init(getApplicationContext(), APP_ID, AUTH_KEY, AUTH_SECRET);

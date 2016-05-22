@@ -44,7 +44,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class DataService {
     SharedPreferences preferences;
-
+    public static DataService instance;
     SlingService service;
     UserPopulated user;
     Gson gson = new Gson();
@@ -53,6 +53,14 @@ public class DataService {
     ArrayList<NoticeBoardBase> notices = new ArrayList<NoticeBoardBase>();
     ArrayList<User> teachers = new ArrayList<>();
     //Intent intent = new Intent(null, HomeActivity.class);
+
+    public static void initialize(SharedPreferences pref){
+        instance = new DataService(pref);
+    }
+
+    public static DataService getInstance(){
+        return instance;
+    }
 
     public DataService(SharedPreferences pref){
         String token = pref.getString("token","");
@@ -167,6 +175,11 @@ public class DataService {
         return teacher;
     }
 
+    public List<User> getTeachers(){
+        User[] teachers = gson.fromJson(preferences.getString("teachers", ""), User[].class);
+        return Arrays.asList(teachers);
+    }
+
     public List<NoticeBoardBase> getNotices(){
         Log.i("Data", preferences.getString("notices", ""));
         NoticeBoardBase[] arr  = gson.fromJson(preferences.getString("notices", ""), NoticeBoardBase[].class);
@@ -197,6 +210,25 @@ public class DataService {
         StudentNested[] students = gson.fromJson(preferences.getString("students",""),StudentNested[].class);
         return Arrays.asList(students);
     }
+    ArrayList<UserPopulated> parents = new ArrayList<>();
+
+    public List<UserPopulated> getParentsTeacherView(){
+        UserPopulated[] parents = gson.fromJson(preferences.getString("parents", ""), UserPopulated[].class);
+        return  Arrays.asList(parents);
+    }
+
+    public UserPopulated findParent(String id){
+        UserPopulated[] parents = gson.fromJson(preferences.getString("parents", ""), UserPopulated[].class);
+        UserPopulated parent = new UserPopulated();
+        for(UserPopulated t:parents){
+            if(t.getId().equalsIgnoreCase(id)){
+                parent = t;
+                break;
+            }
+        }
+        return parent;
+    }
+
 
     private void loadTeacherClasses(final CustomCallback cb){
         service.getClassRoomsByTeacher(getUser().getId()).enqueue(new retrofit2.Callback<Data<List<ClassRoom>>>() {
@@ -235,13 +267,29 @@ public class DataService {
 
                 preferences.edit().putString("classes",gson.toJson(classes)).apply();
                 preferences.edit().putString("notices",gson.toJson(notices)).apply();
-                preferences.edit().putString("students",gson.toJson(students)).apply();
-                cb.onCallback();
+                preferences.edit().putString("students", gson.toJson(students)).apply();
+                service.getAllParents(getUser().getSchool().getId(), true).enqueue(new retrofit2.Callback<Data<List<UserPopulated>>>() {
+                    @Override
+                    public void onResponse(Call<Data<List<UserPopulated>>> call, Response<Data<List<UserPopulated>>> response) {
+                        Log.i("Data Parents", response.body().getData().size() + "");
+                        parents.addAll(response.body().getData());
+                        preferences.edit().putString("parents", gson.toJson(parents)).apply();
+                        cb.onCallback();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Data<List<UserPopulated>>> call, Throwable t) {
+                        Log.e("Error",t.getMessage());
+                        cb.onCallback();
+                    }
+                });
+
             }
 
             @Override
             public void onFailure(Call<Data<List<ClassRoom>>> call, Throwable t) {
                 Log.e("Error", t.getMessage());
+                cb.onCallback();
             }
         });
 

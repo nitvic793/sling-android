@@ -68,6 +68,7 @@ public class ReviewEditorFragment extends android.support.v4.app.Fragment {
             public void onClick(View v) {
                 final ProgressDialog progressDialog = new ProgressDialog(getActivity());
                 progressDialog.setTitle("Loading");
+                progressDialog.show();
                 Review review = new Review();
                 review.setReview(reviewText.getText().toString());
                 review.setStudent(((StudentNested) studentSpinner.getSelectedItem()).getId());
