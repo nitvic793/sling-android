@@ -8,6 +8,7 @@ import in.sling.models.GetWardsResponse;
 import in.sling.models.NoticeBoard;
 import in.sling.models.NoticeBoardBase;
 import in.sling.models.OtpResponse;
+import in.sling.models.PasswordPayload;
 import in.sling.models.Review;
 import in.sling.models.ReviewPopulated;
 import in.sling.models.School;
@@ -93,5 +94,11 @@ public interface SlingService{
 
     @GET("user")
     Call<Data<List<UserPopulated>>> getAllParents(@Query("school")String school,@Query("isParent")boolean isParent);
+
+    @GET("user")
+    Call<Data<List<UserPopulated>>> getAllTeachers(@Query("school")String school,@Query("isTeacher")boolean isTeacher);
+
+    @POST("user/{id}")
+    Call<Data<UserPopulated>> updatePassword(@Path("id")String id, @Body PasswordPayload password);
 
 }

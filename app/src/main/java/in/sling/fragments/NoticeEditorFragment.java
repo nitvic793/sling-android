@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,6 +69,9 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
         getActivity().setTitle("New Notice");
         Button btn = (Button)rootView.findViewById(R.id.post_notice_btn);
         noticeText = (EditText)rootView.findViewById(R.id.notice_edittext);
+        InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imgr.showSoftInput(noticeText, 0);
+        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         List<String> values = new ArrayList<String>();
         ArrayList<ClassRoom> classes = new ArrayList<>(dataService.getClasses());
         for(ClassRoom cl: classes){
@@ -119,6 +125,11 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_notice_post,menu);
     }
 
 

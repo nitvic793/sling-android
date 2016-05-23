@@ -52,6 +52,8 @@ public class DataService {
     ArrayList<ClassRoom> classes = new ArrayList<ClassRoom>();
     ArrayList<NoticeBoardBase> notices = new ArrayList<NoticeBoardBase>();
     ArrayList<User> teachers = new ArrayList<>();
+    ArrayList<UserPopulated> parents = new ArrayList<>();
+    ArrayList<UserPopulated> teachersPopulated = new ArrayList<>();
     //Intent intent = new Intent(null, HomeActivity.class);
 
     public static void initialize(SharedPreferences pref){
@@ -106,25 +108,31 @@ public class DataService {
                 GetWardsResponse result = response.body().getData();
                 classes.addAll(result.getClasses());
                 Map<String, ClassRoom> classRoomHashMap = new HashMap<String, ClassRoom>();
+                Map<String,User> teacherMap = new HashMap<String, User>();
                 for (ClassRoom cl : classes) {
                     classRoomHashMap.put(cl.getId(), cl);
                     notices.addAll(cl.getNotices());
-                    teachers.add(cl.getTeacher());
+
+                    teacherMap.put(cl.getTeacher().getId(),cl.getTeacher());
                 }
 
-//                classes.clear();
-//                for(ClassRoom cl: classRoomHashMap.values()){
-//                    classes.add(cl);
-//                }
-//                //classes.addAll(classRoomHashMap.values());
-//                Map<String, NoticeBoardBase> noticeMap = new HashMap<String, NoticeBoardBase>();
-//                for(NoticeBoardBase nb: notices){
-//                    noticeMap.put(nb.getId(), nb);
-//                }
-//                notices.clear();
-//                for(NoticeBoardBase nb: noticeMap.values()){
-//                    notices.add(nb);
-//                }
+                for(User u:teacherMap.values()){
+                    teachers.add(u);
+                }
+                classes.clear();
+                for(ClassRoom cl: classRoomHashMap.values()){
+                    classes.add(cl);
+                }
+                //classes.addAll(classRoomHashMap.values());
+                Map<String, NoticeBoardBase> noticeMap = new HashMap<String, NoticeBoardBase>();
+                for(NoticeBoardBase nb: notices){
+                    noticeMap.put(nb.getId(), nb);
+                }
+                notices.clear();
+                for(NoticeBoardBase nb: noticeMap.values()){
+                    notices.add(nb);
+                }
+
                 preferences.edit().putString("teachers", gson.toJson(teachers)).apply();
                 preferences.edit().putString("classes", gson.toJson(classes)).apply();
                 preferences.edit().putString("notices", gson.toJson(notices)).apply();
@@ -180,6 +188,11 @@ public class DataService {
         return Arrays.asList(teachers);
     }
 
+    public List<UserPopulated> getTeachersTeacherView(){
+        UserPopulated[] teachers = gson.fromJson(preferences.getString("teachersPopulated", ""), UserPopulated[].class);
+        return Arrays.asList(teachers);
+    }
+
     public List<NoticeBoardBase> getNotices(){
         Log.i("Data", preferences.getString("notices", ""));
         NoticeBoardBase[] arr  = gson.fromJson(preferences.getString("notices", ""), NoticeBoardBase[].class);
@@ -210,12 +223,14 @@ public class DataService {
         StudentNested[] students = gson.fromJson(preferences.getString("students",""),StudentNested[].class);
         return Arrays.asList(students);
     }
-    ArrayList<UserPopulated> parents = new ArrayList<>();
+
 
     public List<UserPopulated> getParentsTeacherView(){
         UserPopulated[] parents = gson.fromJson(preferences.getString("parents", ""), UserPopulated[].class);
         return  Arrays.asList(parents);
     }
+
+
 
     public UserPopulated findParent(String id){
         UserPopulated[] parents = gson.fromJson(preferences.getString("parents", ""), UserPopulated[].class);
@@ -274,6 +289,20 @@ public class DataService {
                         Log.i("Data Parents", response.body().getData().size() + "");
                         parents.addAll(response.body().getData());
                         preferences.edit().putString("parents", gson.toJson(parents)).apply();
+                        service.getAllTeachers(getUser().getSchool().getId(),true).enqueue(new retrofit2.Callback<Data<List<UserPopulated>>>() {
+                            @Override
+                            public void onResponse(Call<Data<List<UserPopulated>>> call, Response<Data<List<UserPopulated>>> response) {
+                                teachersPopulated.addAll(response.body().getData());
+                                preferences.edit().putString("teachersPopulated", gson.toJson(teachersPopulated)).apply();
+                                cb.onCallback();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Data<List<UserPopulated>>> call, Throwable t) {
+                                Log.e("Get Teachers Error",t.getMessage());
+                                cb.onCallback();
+                            }
+                        });
                         cb.onCallback();
                     }
 

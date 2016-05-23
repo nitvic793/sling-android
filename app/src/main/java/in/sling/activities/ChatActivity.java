@@ -93,7 +93,7 @@ public class ChatActivity extends AppCompatActivity {
                                 chatMessagingFragment).commit();
             }
         });
-        getSupportActionBar().setTitle("Chat");
+        getSupportActionBar().setTitle(bundle.getString("name"));
 
     }
 

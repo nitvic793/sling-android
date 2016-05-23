@@ -71,7 +71,12 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+            if (backStackEntryCount == 0) {
+                // write your code to switch between fragments.
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -94,14 +99,14 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_chats) {
             fragmentManager.beginTransaction()
                     .replace(R.id.container,
-                            ChatFragment.newInstance()).commit();
+                            ChatFragment.newInstance()).addToBackStack("review").commit();
             getSupportActionBar().setTitle("Chats");
             getSupportActionBar().setSubtitle(null);
 
         } else if (id == R.id.nav_student_review) {
             fragmentManager.beginTransaction()
                     .replace(R.id.container,
-                            ReviewFragment.newInstance()).commit();
+                            ReviewFragment.newInstance()).addToBackStack("review").commit();
 
             getSupportActionBar().setTitle("Reviews");
             getSupportActionBar().setSubtitle(null);
@@ -109,7 +114,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             getFragmentManager().beginTransaction()
                     .replace(R.id.container,
-                            new SettingsFragement()).commit();
+                            new SettingsFragement()).addToBackStack("review").commit();
 
             getSupportActionBar().setTitle("Settings");
             getSupportActionBar().setSubtitle(null);

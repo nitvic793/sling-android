@@ -2,14 +2,18 @@ package in.sling.fragments;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.quickblox.chat.model.QBDialog;
 import com.quickblox.chat.model.QBDialogType;
@@ -24,6 +28,10 @@ import org.joda.time.format.DateTimeFormat;
 
 import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import in.sling.R;
 import in.sling.adapters.ChatDialogsAdapter;
@@ -31,6 +39,7 @@ import in.sling.models.ChatDialogViewModel;
 import in.sling.services.CustomCallback;
 import in.sling.services.DataService;
 import in.sling.utils.Chat;
+import in.sling.utils.DividerItemDecoration;
 
 /**
  * Created by abhishek on 18/02/16 at 5:40 PM.
@@ -62,7 +71,7 @@ public class ChatDialogsFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
+    boolean threadDone = false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -71,6 +80,7 @@ public class ChatDialogsFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.chat_dialog_rv);
         recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -84,7 +94,39 @@ public class ChatDialogsFragment extends Fragment {
                 getDialogs();
             }
         });
+
         return view;
+    }
+
+    private void refreshDialogs(final CustomCallback cb){
+        QBRequestGetBuilder requestGetBuilder = new QBRequestGetBuilder();
+        requestGetBuilder.setLimit(100);
+        chat.getChatService().getChatDialogs(QBDialogType.PRIVATE, requestGetBuilder, new QBEntityCallback<ArrayList<QBDialog>>() {
+            @Override
+            public void onSuccess(ArrayList<QBDialog> qbDialogs, Bundle bundle) {
+                for(final QBDialog d: qbDialogs){
+                    ChatDialogViewModel chatDialogViewModel = new ChatDialogViewModel();
+                    chatDialogViewModel.setName(d.getName());
+                    chatDialogViewModel.setLastText(d.getLastMessage());
+                    DateTime dt = new DateTime();
+                    chatDialogViewModel.setDate(dt.toString(DateTimeFormat.forPattern("dd MMM yyyy")));
+                    chatDialogViewModel.setId(d.getDialogId());
+                    dialogs.add(chatDialogViewModel);
+
+                }
+                adapter = new ChatDialogsAdapter(dialogs, getContext());
+                recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                cb.onCallback();
+            }
+
+            @Override
+            public void onError(QBResponseException e) {
+                Toast.makeText(getActivity(),"Check internet connection",Toast.LENGTH_SHORT);
+                cb.onCallback();
+            }
+        });
     }
 
     private void getDialogs() {
@@ -107,6 +149,7 @@ public class ChatDialogsFragment extends Fragment {
 
                 }
                 adapter = new ChatDialogsAdapter(dialogs, getContext());
+                recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
                 recyclerView.setAdapter(adapter);
                 progressDialog.dismiss();
             }

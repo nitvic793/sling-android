@@ -25,6 +25,7 @@ import in.sling.models.User;
 import in.sling.models.UserPopulated;
 import in.sling.services.DataService;
 import in.sling.utils.Chat;
+import in.sling.utils.DividerItemDecoration;
 
 /**
  * Created by abhishek on 18/02/16 at 5:40 PM.
@@ -72,6 +73,7 @@ public class ChatUsersFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         loadUsers();
         adapter = new ChatUsersAdapter(users, getContext());
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
         return view;
     }
@@ -88,12 +90,22 @@ public class ChatUsersFragment extends Fragment {
         }
         else if(dataService.getUserType().equalsIgnoreCase("teacher")){
             ArrayList<UserPopulated> parents = new ArrayList<>(dataService.getParentsTeacherView());
+            ArrayList<UserPopulated> teachers = new ArrayList<>(dataService.getTeachersTeacherView());
             for(UserPopulated p: parents){
                 ChatUserViewModel chatUserViewModel = new ChatUserViewModel();
                 chatUserViewModel.setName(p.getFirstName() + " " + p.getLastName());
                 chatUserViewModel.setId(p.getId());
                 users.add(chatUserViewModel);
             }
+            for(UserPopulated t:teachers){
+                if(!t.getId().contentEquals(dataService.getUser().getId())){
+                    ChatUserViewModel chatUserViewModel = new ChatUserViewModel();
+                    chatUserViewModel.setName(t.getFirstName() + " " + t.getLastName());
+                    chatUserViewModel.setId(t.getId());
+                    users.add(chatUserViewModel);
+                }
+            }
+
         }
     }
 

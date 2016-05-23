@@ -24,12 +24,13 @@ import in.sling.services.DataService;
  */
 public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.MyViewHolder> {
     private ArrayList<NoticeBoardViewModel> dataSet;
-
+    DataService dataService = DataService.getInstance();
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewName;
         TextView textViewVersion;
         ImageView imageViewIcon;
+        TextView teacherName;
         TextView textDate;
 
         public MyViewHolder(View itemView) {
@@ -37,6 +38,7 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
             this.textViewName = (TextView) itemView.findViewById(R.id.teacherName);
             this.textViewVersion = (TextView) itemView.findViewById(R.id.noticeText);
             textDate = (TextView) itemView.findViewById(R.id.notice_date);
+            teacherName = (TextView)itemView.findViewById(R.id.notice_teacher_name);
             // this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
@@ -61,6 +63,7 @@ public class NoticeBoardAdapter extends RecyclerView.Adapter<NoticeBoardAdapter.
         holder.textDate.setText(dt.toLocalDate().toString(DateTimeFormat.forPattern("dd MMM yyyy")));
         textViewName.setText(dataSet.get(position).getClassRoom());
         textViewVersion.setText(dataSet.get(position).getNotice());
+        holder.teacherName.setText("By " + dataSet.get(position).getTeacher());
     }
 
 

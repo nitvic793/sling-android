@@ -159,7 +159,7 @@ public class NoticeFragment extends Fragment {
                Toast.makeText(recyclerView.getContext(), "Test", Toast.LENGTH_SHORT).show();
                 getFragmentManager().beginTransaction()
                         .replace(R.id.container,
-                                NoticeEditorFragment.newInstance()).commit();
+                                NoticeEditorFragment.newInstance()).addToBackStack( "tag" ).commit();
                 return false;
             }
         });

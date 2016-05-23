@@ -1,5 +1,6 @@
 package in.sling.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -56,16 +57,24 @@ public class ChatMessagingFragment extends Fragment {
 
     Chat chat = Chat.getChatInstance();
     DataService dataService;
-
+    Activity activity;
     QBMessageListener<QBPrivateChat> privateChatMessageListener = new QBMessageListener<QBPrivateChat>() {
         @Override
         public void processMessage(QBPrivateChat privateChat, final QBChatMessage chatMessage) {
-            chatArrayAdapter.add(new ChatMessage(false, chatMessage.getBody()));
+            Log.i("Message", "Received");
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    chatArrayAdapter.add(new ChatMessage(false, chatMessage.getBody()));
+                    chatArrayAdapter.notifyDataSetChanged();
+                }
+            });
+
         }
 
         @Override
         public void processError(QBPrivateChat privateChat, QBChatException error, QBChatMessage originMessage){
-
+            Log.e("Message Error",error.getMessage());
         }
     };
 
@@ -105,6 +114,7 @@ public class ChatMessagingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_chat_message, container, false);
         view.setBackgroundColor(getResources().getColor(android.R.color.white));
         buttonSend = (Button) view.findViewById(R.id.send);
@@ -133,17 +143,28 @@ public class ChatMessagingFragment extends Fragment {
 
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(chatArrayAdapter);
-
+        final Activity currentActivity = getActivity();
         //to scroll the list view to bottom on data change
         chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
-                listView.setSelection(chatArrayAdapter.getCount() - 1);
+                new Thread(new Runnable() {
+                    public void run() {
+                        currentActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listView.setSelection(chatArrayAdapter.getCount() - 1);
+                                listView.smoothScrollToPosition(chatArrayAdapter.getCount() - 1);
+                            }
+                        });
+                    }
+                }).start();
+
             }
         });
 
-        QBRequestGetBuilder requestGetBuilder = new QBRequestGetBuilder();
+        final QBRequestGetBuilder requestGetBuilder = new QBRequestGetBuilder();
         requestGetBuilder.setLimit(100);
         final ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Loading");
@@ -155,7 +176,6 @@ public class ChatMessagingFragment extends Fragment {
                 public void onSuccess(ArrayList<QBChatMessage> qbChatMessages, Bundle bundle) {
                     Log.i("Chat Messages", qbChatMessages.size() + "");
                     for(QBChatMessage msg: qbChatMessages){
-                        Log.i("Chat Users",msg.getSenderId() + " " + chat.getCurrentUser().getId() + " "  + (msg.getSenderId().equals(chat.getCurrentUser().getId())));
                         ChatMessage chatMessage = new ChatMessage((msg.getSenderId().equals(chat.getCurrentUser().getId()))?true:false,msg.getBody());
                         chatArrayAdapter.add(chatMessage);
                     }
@@ -196,7 +216,32 @@ public class ChatMessagingFragment extends Fragment {
                     if (privateChat == null)
                         privateChat = chat.getPrivateChatManager().createChat(qbUser.getId(), privateChatMessageListener);
                     qbPrivateChat = privateChat;
-                    progressDialog.dismiss();
+                    chat.getPrivateChatManager().createDialog(opponent.getId(), new QBEntityCallback<QBDialog>() {
+                        @Override
+                        public void onSuccess(QBDialog qbDialog, Bundle bundle) {
+                            chat.getChatService().getDialogMessages(new QBDialog(qbDialog.getDialogId()), requestGetBuilder, new QBEntityCallback<ArrayList<QBChatMessage>>() {
+                                @Override
+                                public void onSuccess(ArrayList<QBChatMessage> qbChatMessages, Bundle bundle) {
+                                    for (QBChatMessage msg : qbChatMessages) {
+                                        ChatMessage chatMessage = new ChatMessage((msg.getSenderId().equals(chat.getCurrentUser().getId())) ? true : false, msg.getBody());
+                                        chatArrayAdapter.add(chatMessage);
+                                    }
+                                    progressDialog.dismiss();
+                                }
+
+                                @Override
+                                public void onError(QBResponseException e) {
+                                    Log.e("Chat Messaging", e.getMessage());
+                                    progressDialog.dismiss();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(QBResponseException e) {
+                            progressDialog.dismiss();
+                        }
+                    });
                 }
 
                 @Override

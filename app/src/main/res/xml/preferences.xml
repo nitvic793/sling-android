@@ -22,6 +22,11 @@
             android:targetClass="in.sling.activities.UpdatePasswordActivity"
             />
     </PreferenceScreen>
+    <Preference
+        android:key="logout"
+        android:title="Logout">
+
+    </Preference>
 
     <PreferenceCategory
         android:title="School Settings">

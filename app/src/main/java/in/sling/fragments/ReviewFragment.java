@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -78,7 +79,13 @@ public class ReviewFragment extends Fragment {
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        loadReviewData();
+        try{
+            loadReviewData();
+        }
+        catch(Exception e){
+            Log.e("Error", e.getMessage());
+        }
+
         adapter = new ReviewAdapter(reviewData);
         recyclerView.setAdapter(adapter);
         return view;
@@ -92,6 +99,9 @@ public class ReviewFragment extends Fragment {
                 for(Review review: ward.getReviews()){
                     ReviewViewModel reviewVm = new ReviewViewModel();
                     ClassRoom room = dataService.findClassRoom(review.getClassRoom());
+                    if(room==null){
+                        continue;
+                    }
                     reviewVm.setClassRoom(room.getRoom() + " " + room.getSubject());
                     reviewVm.setStudent(ward.getName());
                     reviewVm.setReview(review.getReview());
@@ -157,7 +167,7 @@ public class ReviewFragment extends Fragment {
                 public boolean onMenuItemClick(MenuItem item) {
                     getFragmentManager().beginTransaction()
                             .replace(R.id.container,
-                                    ReviewEditorFragment.newInstance()).commit();
+                                    ReviewEditorFragment.newInstance()).addToBackStack("review").commit();
                     return true;
                 }
             });

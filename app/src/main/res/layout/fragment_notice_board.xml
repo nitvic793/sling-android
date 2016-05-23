@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:padding="16dp"
-    >
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:background="@color/review_grey_bg"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cv"
+        android:layout_margin="8dp"
+        card_view:cardCornerRadius="2dp"
         >
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="8dp"
+            android:orientation="vertical"
             >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/teacherName"
+                style="@style/TextAppearance.AppCompat.Title"
                 android:layout_alignParentTop="true"
                 android:text="Teacher"
                 android:gravity="left"
@@ -36,20 +42,30 @@
                 android:textSize="12sp"
                 android:paddingTop="6sp"
                 />
-            <View
-                android:id="@+id/divider"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
-                android:layout_below="@+id/teacherName"/>
+                android:layout_height="wrap_content"
+                android:id="@+id/notice_teacher_name"
+                android:layout_below="@id/teacherName"
+                android:text="By Ram Kumar"
+                android:textSize="12sp"
+                android:paddingTop="6sp"
+                />
+            <!--<View-->
+                <!--android:id="@+id/divider"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="1dp"-->
+                <!--android:background="@android:color/darker_gray"-->
+                <!--android:layout_below="@+id/teacherName"/>-->
 
             <TextView
                 android:paddingTop="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/noticeText"
-                android:layout_below="@+id/divider"
-                android:text="Review"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_below="@+id/notice_teacher_name"
+                android:text="This is a notice. Tomorrow is a holiday."
                 />
 
         </RelativeLayout>

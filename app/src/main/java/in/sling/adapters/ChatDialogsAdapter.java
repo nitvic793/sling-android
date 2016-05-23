@@ -73,6 +73,7 @@ public class ChatDialogsAdapter extends RecyclerView.Adapter<ChatDialogsAdapter.
         }
         textViewName.setText(name);
         textViewVersion.setText(dataSet.get(position).getLastText());
+        final String userName =  name;
         //DateTime dt = new DateTime(dataSet.get(position).getDate());
         //holder.textDate.setText(dt.toLocalDate().toString(DateTimeFormat.forPattern("dd MMM yyyy")));
         holder.textDate.setText(dataSet.get(position).getDate());
@@ -80,6 +81,7 @@ public class ChatDialogsAdapter extends RecyclerView.Adapter<ChatDialogsAdapter.
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
+                bundle.putString("name",userName);
                 bundle.putString("dialog", dataSet.get(position).getId());
                 bundle.putString("opponent", dataSet.get(position).getName());
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);

@@ -68,6 +68,7 @@ public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.MyVi
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatActivity.class);
                 Bundle bundle = new Bundle();
+                bundle.putString("name",dataSet.get(position).getName());
                 bundle.putString("opponent",dataSet.get(position).getId());
                 intent.putExtras(bundle);
                 context.startActivity(intent);

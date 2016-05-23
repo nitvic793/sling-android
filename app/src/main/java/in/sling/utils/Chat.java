@@ -68,7 +68,7 @@ public class Chat {
 
     public void createSession(final CustomCallback cb){
         final QBUser user = new QBUser(slingUser.getId(), slingUser.getId());
-        user.setFullName(slingUser.getFirstName() + " " + slingUser.getLastName());
+        //user.setFullName(slingUser.getFirstName() + " " + slingUser.getLastName());
         if(slingUser.getQuickBloxId()==null){
             QBAuth.createSession(new QBEntityCallback<QBSession>() {
                 @Override
