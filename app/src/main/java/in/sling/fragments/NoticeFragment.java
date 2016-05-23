@@ -12,10 +12,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.DateTimeKeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +43,7 @@ import in.sling.models.Data;
 import in.sling.models.NoticeBoard;
 import in.sling.models.NoticeBoardBase;
 import in.sling.models.NoticeBoardViewModel;
+import in.sling.services.CustomCallback;
 import in.sling.services.DataService;
 import in.sling.services.RestFactory;
 import in.sling.services.SlingService;
@@ -59,7 +62,7 @@ public class NoticeFragment extends Fragment {
     private static RecyclerView.Adapter adapter;
     private SlingService service;
     private DataService dataService;
-
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private static ArrayList<NoticeBoardBase> data;
     private static ArrayList<NoticeBoardViewModel> noticeData = new ArrayList<>();
 
@@ -92,7 +95,7 @@ public class NoticeFragment extends Fragment {
         view.setBackgroundColor(getResources().getColor(android.R.color.white));
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-
+        mSwipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.notice_swipeRefreshLayout);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -125,7 +128,30 @@ public class NoticeFragment extends Fragment {
        //noticeData.addAll(Arrays.asList(noticeArray));
         adapter = new NoticeBoardAdapter(noticeData);
         recyclerView.setAdapter(adapter);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshItems();
+            }
+        });
+
         return view;
+    }
+
+    public void refreshItems(){
+        dataService.LoadAllRequiredData(new CustomCallback() {
+            @Override
+            public void onCallback() {
+                Log.i("Check", "Done");
+                Toast.makeText(getContext(), "Done", Toast.LENGTH_SHORT).show();
+                loadNoticeBoardData();
+                adapter = new NoticeBoardAdapter(noticeData);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     private void loadNoticeBoardData(){

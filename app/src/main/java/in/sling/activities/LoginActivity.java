@@ -56,10 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         registerIntent = new Intent(this,RegisterActivity.class);
         intent = new Intent(this,HomeActivity.class);
         SharedPreferences preferences = getSharedPreferences("in.sling", Context.MODE_PRIVATE);
-
-        if(preferences.getString("token","")!=null){
-            
-        }
         DataService.initialize(preferences);
         setContentView(R.layout.activity_login);
         Button button = (Button)findViewById(R.id.register_continue);
@@ -78,7 +74,11 @@ public class LoginActivity extends AppCompatActivity {
         });
         emailText = (EditText)findViewById(R.id.email);
         passwordText = (EditText)findViewById(R.id.password);
-
+        if(preferences.getString("token","")!=null){
+            emailText.setText(preferences.getString("username",""));
+            passwordText.setText(preferences.getString("password",""));
+            loginUser();
+        }
     }
 
     private void storeToken(String token){
@@ -104,6 +104,14 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    private void storeUserPass(String user,String pass){
+        SharedPreferences preferences = getSharedPreferences("in.sling", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("username", user);
+        editor.putString("password", pass);
+        editor.apply();
+    }
+
     public void loginUser(){
         final ProgressDialog progress = new ProgressDialog(this);
         final ProgressDialog dataLoadProgress = new ProgressDialog(this);
@@ -111,10 +119,11 @@ public class LoginActivity extends AppCompatActivity {
         progress.setMessage("Logging in...");
         progress.show();
 
-        try
-        {
+        try {
             String email = emailText.getText().toString();
             String password = passwordText.getText().toString();
+            SharedPreferences preferences = getSharedPreferences("in.sling", Context.MODE_PRIVATE);
+            storeUserPass(email,password);
             service = RestFactory.createService();
             service.login(email,password).enqueue(new Callback<Data<Token>>() {
                 @Override

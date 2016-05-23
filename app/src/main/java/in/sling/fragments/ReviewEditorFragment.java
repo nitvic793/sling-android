@@ -12,6 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ import java.util.List;
 
 import in.sling.R;
 import in.sling.models.ClassRoom;
+import in.sling.models.ClassRoomNested;
 import in.sling.models.Data;
 import in.sling.models.Review;
 import in.sling.models.ReviewPopulated;
@@ -43,6 +46,9 @@ public class ReviewEditorFragment extends android.support.v4.app.Fragment {
     Spinner classSpinner;
     EditText reviewText;
     Spinner studentSpinner;
+    ArrayList<ClassRoom> classes;
+    ArrayAdapter<StudentNested> adapter;
+
     public static ReviewEditorFragment newInstance(){
         return new ReviewEditorFragment();
     }
@@ -63,6 +69,10 @@ public class ReviewEditorFragment extends android.support.v4.app.Fragment {
         getActivity().setTitle("New Notice");
         Button btn = (Button)rootView.findViewById(R.id.post_review_btn);
         reviewText = (EditText)rootView.findViewById(R.id.review_edit_text);
+        InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imgr.showSoftInput(reviewText, 0);
+
+        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,17 +103,18 @@ public class ReviewEditorFragment extends android.support.v4.app.Fragment {
                     @Override
                     public void onFailure(Call<Data<Review>> call, Throwable t) {
                         progressDialog.dismiss();
-                        Log.e("Error",t.getMessage());
+                        Log.e("Error", t.getMessage());
                     }
                 });
             }
         });
-
-        ArrayList<StudentNested> students = new ArrayList<>(dataService.getStudentsTeacherView());
+        classes = new ArrayList<>(dataService.getClasses());
+        final ArrayList<StudentNested> students = new ArrayList<>(dataService.getStudentsTeacherView());
         Spinner studentSpinner = (Spinner)rootView.findViewById(R.id.review_student_spinner);
-        ArrayAdapter<StudentNested> adapter = new ArrayAdapter<StudentNested>(getActivity().getApplicationContext(),R.layout.spinner_item, students);
+        adapter = new ArrayAdapter<StudentNested>(getActivity().getApplicationContext(),R.layout.spinner_item, students);
         studentSpinner.setAdapter(adapter);
         this.studentSpinner = studentSpinner;
+
         return rootView;
     }
 
@@ -115,12 +126,28 @@ public class ReviewEditorFragment extends android.support.v4.app.Fragment {
         MenuItem newReviewMenu = menu.findItem(R.id.menu_new_review);
         newReviewMenu.setVisible(false);
         List<String> values = new ArrayList<String>();
-        ArrayList<ClassRoom> classes = new ArrayList<>(dataService.getClasses());
+
         for(ClassRoom cl: classes){
             values.add(cl.getRoom() + " " + cl.getSubject());
         }
-        ArrayAdapter<ClassRoom> karant_adapter = new ArrayAdapter<>(((AppCompatActivity)getActivity()).getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1, classes);
+
+        final ArrayAdapter<ClassRoom> karant_adapter = new ArrayAdapter<>(((AppCompatActivity)getActivity()).getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1, classes);
         spinner.setAdapter(karant_adapter);
         classSpinner = spinner;
+        classSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ClassRoom cl = karant_adapter.getItem(position);
+                final ArrayList<StudentNested> students = new ArrayList<>(cl.getStudents());
+                adapter = new ArrayAdapter<StudentNested>(getActivity().getApplicationContext(),R.layout.spinner_item, students);
+                studentSpinner.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 }

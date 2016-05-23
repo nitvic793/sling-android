@@ -1,5 +1,6 @@
 package in.sling.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -35,6 +36,7 @@ public class SettingsFragement extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                getActivity().getSharedPreferences("in.sling", Context.MODE_PRIVATE).edit().clear().commit();
                 startActivity(intent);
                 getActivity().finish();
                 return false;

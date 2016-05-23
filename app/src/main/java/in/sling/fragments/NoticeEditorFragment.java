@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -67,7 +68,7 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
         rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
 
         getActivity().setTitle("New Notice");
-        Button btn = (Button)rootView.findViewById(R.id.post_notice_btn);
+       // Button btn = (Button)rootView.findViewById(R.id.post_notice_btn);
         noticeText = (EditText)rootView.findViewById(R.id.notice_edittext);
         InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imgr.showSoftInput(noticeText, 0);
@@ -81,55 +82,67 @@ public class NoticeEditorFragment extends android.support.v4.app.Fragment {
         ArrayAdapter<ClassRoom> adapter = new ArrayAdapter<ClassRoom>(getActivity().getApplicationContext(),R.layout.spinner_item, classes);
         classSpinner.setAdapter(adapter);
         this.classSpinner = classSpinner;
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               final ProgressDialog progress = new ProgressDialog(getActivity());
-               progress.setTitle("Posting");
-                progress.setMessage("Creating new notice...");
-                progress.show();
-                Log.e("Data", "Test");
-                SlingService api = dataService.getAPIService();
-                String notice = noticeText.getText().toString();
-                ClassRoom cls = (ClassRoom)classSpinner.getSelectedItem();
-                NoticeBoardBase noticeBoard = new NoticeBoardBase();
-                noticeBoard.setNotice(notice);
-                noticeBoard.setClassRoom(cls.getNested().getId());
-                api.createNotice(noticeBoard).enqueue(new Callback<Data<NoticeBoardBase>>() {
-                    @Override
-                    public void onResponse(Call<Data<NoticeBoardBase>> call, Response<Data<NoticeBoardBase>> response) {
-                        progress.dismiss();
-                        progress.setTitle("Loading");
-                        progress.setMessage("Refreshing Data...");
-                        progress.show();
-                        dataService.LoadAllRequiredData(new CustomCallback() {
-                            @Override
-                            public void onCallback() {
-                                progress.dismiss();
-                                Log.i("Check", "Done");
-                                getFragmentManager().beginTransaction()
-                                        .replace(R.id.container,
-                                                NoticeFragment.newInstance()).commit();
-                                Toast.makeText(rootView.getContext(), "Done", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+//        btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//              postNewNotice();
+//
+//            }
+//        });
+        return rootView;
+    }
 
+    void postNewNotice(){
+        final ProgressDialog progress = new ProgressDialog(getActivity());
+        progress.setTitle("Posting");
+        progress.setMessage("Creating new notice...");
+        progress.show();
+        Log.e("Data", "Test");
+        SlingService api = dataService.getAPIService();
+        String notice = noticeText.getText().toString();
+        ClassRoom cls = (ClassRoom)classSpinner.getSelectedItem();
+        NoticeBoardBase noticeBoard = new NoticeBoardBase();
+        noticeBoard.setNotice(notice);
+        noticeBoard.setClassRoom(cls.getNested().getId());
+        api.createNotice(noticeBoard).enqueue(new Callback<Data<NoticeBoardBase>>() {
+            @Override
+            public void onResponse(Call<Data<NoticeBoardBase>> call, Response<Data<NoticeBoardBase>> response) {
+                progress.dismiss();
+                progress.setTitle("Loading");
+                progress.setMessage("Refreshing Data...");
+                progress.show();
+                dataService.LoadAllRequiredData(new CustomCallback() {
                     @Override
-                    public void onFailure(Call<Data<NoticeBoardBase>> call, Throwable t) {
-                        Toast.makeText(getActivity().getApplicationContext(), "Error: Could not post notice!", Toast.LENGTH_SHORT).show();
-                       // progress.dismiss();
+                    public void onCallback() {
+                        progress.dismiss();
+                        Log.i("Check", "Done");
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.container,
+                                        NoticeFragment.newInstance()).commit();
+                        Toast.makeText(getContext(), "Done", Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
 
+            @Override
+            public void onFailure(Call<Data<NoticeBoardBase>> call, Throwable t) {
+                Toast.makeText(getActivity().getApplicationContext(), "Error: Could not post notice!", Toast.LENGTH_SHORT).show();
+                // progress.dismiss();
             }
         });
-        return rootView;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_notice_post,menu);
+        inflater.inflate(R.menu.menu_notice_post, menu);
+        MenuItem newPostMenuItem = menu.findItem(R.id.menu_new_post);
+        newPostMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                postNewNotice();
+                return false;
+            }
+        });
     }
 
 

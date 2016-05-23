@@ -1,11 +1,13 @@
 package in.sling.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
@@ -39,6 +42,7 @@ import in.sling.models.ReviewPopulated;
 import in.sling.models.ReviewViewModel;
 import in.sling.models.Student;
 import in.sling.models.User;
+import in.sling.services.CustomCallback;
 import in.sling.services.DataService;
 
 /**
@@ -49,7 +53,7 @@ public class ReviewFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView.Adapter adapter;
     private DataService dataService;
-
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private static ArrayList<Review> data;
     private static ArrayList<ReviewViewModel> reviewData = new ArrayList<>();
 
@@ -74,7 +78,7 @@ public class ReviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.review_recycler, container, false);
         view.setBackgroundColor(getResources().getColor(android.R.color.white));
-
+        mSwipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.review_swipeRefreshLayout);
         recyclerView = (RecyclerView) view.findViewById(R.id.review_rv);
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -88,7 +92,28 @@ public class ReviewFragment extends Fragment {
 
         adapter = new ReviewAdapter(reviewData);
         recyclerView.setAdapter(adapter);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshItems();
+            }
+        });
         return view;
+    }
+
+    public void refreshItems(){
+        dataService.LoadAllRequiredData(new CustomCallback() {
+            @Override
+            public void onCallback() {
+                Log.i("Check", "Done");
+                Toast.makeText(getContext(), "Done", Toast.LENGTH_SHORT).show();
+                loadReviewData();
+                adapter = new ReviewAdapter(reviewData);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     private void loadReviewData(){
