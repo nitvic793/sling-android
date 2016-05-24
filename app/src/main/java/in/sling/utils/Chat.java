@@ -127,7 +127,22 @@ public class Chat {
             });
         }
         else{
+            QBAuth.createSession(user, new QBEntityCallback<QBSession>() {
+                @Override
+                public void onSuccess(QBSession qbSession, Bundle bundle) {
+                    mUser = user;
+                    mUser.setId(qbSession.getUserId());
+                    cb.onCallback();
+                    Log.i("Chat", "Session created");
 
+                }
+
+                @Override
+                public void onError(QBResponseException e) {
+                    Log.e("Chat Error", e.getMessage());
+                    cb.onCallback();
+                }
+            });
         }
     }
 

@@ -1,5 +1,6 @@
 package in.sling.services;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -108,28 +109,28 @@ public class DataService {
                 GetWardsResponse result = response.body().getData();
                 classes.addAll(result.getClasses());
                 Map<String, ClassRoom> classRoomHashMap = new HashMap<String, ClassRoom>();
-                Map<String,User> teacherMap = new HashMap<String, User>();
+                Map<String, User> teacherMap = new HashMap<String, User>();
                 for (ClassRoom cl : classes) {
                     classRoomHashMap.put(cl.getId(), cl);
                     notices.addAll(cl.getNotices());
 
-                    teacherMap.put(cl.getTeacher().getId(),cl.getTeacher());
+                    teacherMap.put(cl.getTeacher().getId(), cl.getTeacher());
                 }
 
-                for(User u:teacherMap.values()){
+                for (User u : teacherMap.values()) {
                     teachers.add(u);
                 }
                 classes.clear();
-                for(ClassRoom cl: classRoomHashMap.values()){
+                for (ClassRoom cl : classRoomHashMap.values()) {
                     classes.add(cl);
                 }
                 //classes.addAll(classRoomHashMap.values());
                 Map<String, NoticeBoardBase> noticeMap = new HashMap<String, NoticeBoardBase>();
-                for(NoticeBoardBase nb: notices){
+                for (NoticeBoardBase nb : notices) {
                     noticeMap.put(nb.getId(), nb);
                 }
                 notices.clear();
-                for(NoticeBoardBase nb: noticeMap.values()){
+                for (NoticeBoardBase nb : noticeMap.values()) {
                     notices.add(nb);
                 }
 
@@ -143,7 +144,7 @@ public class DataService {
 
             @Override
             public void onFailure(Call<Data<GetWardsResponse>> call, Throwable t) {
-                Log.e("Error", t.getMessage());
+                Log.e("Error", "Could not get data");
             }
         });
     }
@@ -289,7 +290,7 @@ public class DataService {
                         Log.i("Data Parents", response.body().getData().size() + "");
                         parents.addAll(response.body().getData());
                         preferences.edit().putString("parents", gson.toJson(parents)).apply();
-                        service.getAllTeachers(getUser().getSchool().getId(),true).enqueue(new retrofit2.Callback<Data<List<UserPopulated>>>() {
+                        service.getAllTeachers(getUser().getSchool().getId(), true).enqueue(new retrofit2.Callback<Data<List<UserPopulated>>>() {
                             @Override
                             public void onResponse(Call<Data<List<UserPopulated>>> call, Response<Data<List<UserPopulated>>> response) {
                                 teachersPopulated.addAll(response.body().getData());
@@ -299,7 +300,7 @@ public class DataService {
 
                             @Override
                             public void onFailure(Call<Data<List<UserPopulated>>> call, Throwable t) {
-                                Log.e("Get Teachers Error",t.getMessage());
+                                Log.e("Get Teachers Error", t.getMessage());
                                 cb.onCallback();
                             }
                         });
@@ -308,7 +309,7 @@ public class DataService {
 
                     @Override
                     public void onFailure(Call<Data<List<UserPopulated>>> call, Throwable t) {
-                        Log.e("Error",t.getMessage());
+                        Log.e("Error", t.getMessage());
                         cb.onCallback();
                     }
                 });

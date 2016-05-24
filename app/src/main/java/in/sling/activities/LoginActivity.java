@@ -75,9 +75,15 @@ public class LoginActivity extends AppCompatActivity {
         emailText = (EditText)findViewById(R.id.email);
         passwordText = (EditText)findViewById(R.id.password);
         if(preferences.getString("token","")!=null){
+
             emailText.setText(preferences.getString("username",""));
-            passwordText.setText(preferences.getString("password",""));
-            loginUser();
+            passwordText.setText(preferences.getString("password", ""));
+            if(preferences.getString("username","").equalsIgnoreCase("")
+                    || preferences.getString("password","").equalsIgnoreCase("")){
+                //Do nothing
+
+            }
+            else loginUser();
         }
     }
 

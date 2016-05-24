@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -91,42 +92,49 @@ public class UpdatePasswordActivity extends AppCompatActivity {
         mChangePassoword.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String password = mPassword.getText().toString();
-                String confirmPassword= mPasswordConfirm.getText().toString();
-                if(!password.contentEquals(confirmPassword)){
-                    new AlertDialog.Builder(activity)
-                            .setTitle("Uh Oh!")
-                            .setMessage("Passwords don't match")
-                            .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                try{
+                    String password = mPassword.getText().toString();
+                    String confirmPassword= mPasswordConfirm.getText().toString();
+                    if(!password.contentEquals(confirmPassword)){
+                        new AlertDialog.Builder(activity)
+                                .setTitle("Uh Oh!")
+                                .setMessage("Passwords don't match")
+                                .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
 
-                                }
-                            })
-                            .show();
-                }
-                else{
-                    PasswordPayload passwordPayload = new PasswordPayload();
-                    passwordPayload.setPassword(password);
-                    final ProgressDialog progressDialog = new ProgressDialog(activity);
-                    progressDialog.setMessage("Updating password");
-                    progressDialog.show();
-                    api.updatePassword(dataService.getUser().getId(), passwordPayload).enqueue(new Callback<Data<UserPopulated>>() {
-                        @Override
-                        public void onResponse(Call<Data<UserPopulated>> call, Response<Data<UserPopulated>> response) {
-                            progressDialog.dismiss();
-                            Toast.makeText(activity, "Updated password successfully",Toast.LENGTH_SHORT).show();
-                            activity.finish();
-                        }
+                                    }
+                                })
+                                .show();
+                    }
+                    else{
+                        PasswordPayload passwordPayload = new PasswordPayload();
+                        passwordPayload.setPassword(password);
+                        final ProgressDialog progressDialog = new ProgressDialog(activity);
+                        progressDialog.setMessage("Updating password");
+                        progressDialog.show();
+                        api.updatePassword(dataService.getUser().getId(), passwordPayload).enqueue(new Callback<Data<UserPopulated>>() {
+                            @Override
+                            public void onResponse(Call<Data<UserPopulated>> call, Response<Data<UserPopulated>> response) {
+                                progressDialog.dismiss();
+                                Toast.makeText(activity, "Updated password successfully",Toast.LENGTH_SHORT).show();
 
-                        @Override
-                        public void onFailure(Call<Data<UserPopulated>> call, Throwable t) {
-                            progressDialog.dismiss();
-                            Log.e("UpdatePassword", t.getMessage());
-                            Toast.makeText(activity, "Could not update password",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                activity.finish();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Data<UserPopulated>> call, Throwable t) {
+                                progressDialog.dismiss();
+                                Log.e("UpdatePassword", t.getMessage());
+                                Toast.makeText(activity, "Could not update password",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(),"Unexpected error occurred",Toast.LENGTH_SHORT);
+                }
+
             }
         });
 
