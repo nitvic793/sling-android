@@ -145,6 +145,7 @@ public class NoticeFragment extends Fragment {
             public void onCallback() {
                 Log.i("Check", "Done");
                 Toast.makeText(getContext(), "Done", Toast.LENGTH_SHORT).show();
+                noticeData.clear();
                 loadNoticeBoardData();
                 adapter = new NoticeBoardAdapter(noticeData);
                 recyclerView.setAdapter(adapter);
