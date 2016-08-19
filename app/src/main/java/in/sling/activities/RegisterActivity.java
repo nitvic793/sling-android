@@ -18,8 +18,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
+
 import org.w3c.dom.Text;
 
+import in.sling.Constants;
 import in.sling.R;
 import in.sling.models.ClassRoomNested;
 import in.sling.models.Data;
@@ -63,6 +66,9 @@ public class RegisterActivity extends AppCompatActivity {
     DataService dataService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        new FlurryAgent.Builder()
+                .withLogEnabled(false)
+                .build(this, Constants.FLURRY_KEY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         // Set up the login form.

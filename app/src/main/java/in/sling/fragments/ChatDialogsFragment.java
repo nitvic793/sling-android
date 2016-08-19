@@ -84,16 +84,19 @@ public class ChatDialogsFragment extends Fragment {
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setTitle("Loading");
-        progressDialog.show();
-        chat.createSession(new CustomCallback() {
-            @Override
-            public void onCallback() {
-                progressDialog.dismiss();
-                getDialogs();
-            }
-        });
+
+//        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+//        progressDialog.setTitle("Loading");
+//        progressDialog.show();
+        getDialogs();
+//
+//        chat.createSession(new CustomCallback() {
+//            @Override
+//            public void onCallback() {
+//                progressDialog.dismiss();
+//                getDialogs();
+//            }
+//        });
 
         return view;
     }
@@ -134,6 +137,7 @@ public class ChatDialogsFragment extends Fragment {
         requestGetBuilder.setLimit(100);
         final ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Checking for new data...");
         progressDialog.show();
         chat.getChatService().getChatDialogs(QBDialogType.PRIVATE, requestGetBuilder, new QBEntityCallback<ArrayList<QBDialog>>() {
             @Override

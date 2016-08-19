@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.quickblox.chat.QBPrivateChat;
 import com.quickblox.chat.exception.QBChatException;
 import com.quickblox.chat.listeners.QBMessageListener;
@@ -31,6 +32,7 @@ import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.users.model.QBUser;
 
+import in.sling.Constants;
 import in.sling.R;
 import in.sling.adapters.ChatArrayAdapter;
 import in.sling.fragments.ChatMessagingFragment;
@@ -70,6 +72,9 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        new FlurryAgent.Builder()
+                .withLogEnabled(false)
+                .build(this, Constants.FLURRY_KEY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chat);

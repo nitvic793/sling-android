@@ -14,6 +14,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'net.danlew:android.joda:2.9.3'
     compile "com.quickblox:quickblox-android-sdk-core:2.5.1@aar"
+    compile "com.quickblox:quickblox-android-sdk-messages:2.5.1@aar"
     compile("com.quickblox:quickblox-android-sdk-chat:2.5.1@aar") {
         transitive=true
     }
@@ -21,6 +22,7 @@ dependencies {
     compile('vc908.stickers:stickerfactory:0.2.2@aar') {
         transitive = true;
     }
+    compile 'com.flurry.android:analytics:6.3.1'
 }
 
 android {

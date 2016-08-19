@@ -1,7 +1,11 @@
 package in.sling.activities;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -9,12 +13,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
+
+import java.io.Console;
+
+import in.sling.Constants;
 import in.sling.R;
 import in.sling.fragments.ChatFragment;
 import in.sling.fragments.NoticeEditorFragment;
@@ -23,14 +33,22 @@ import in.sling.fragments.ReviewFragment;
 import in.sling.fragments.SettingsFragement;
 import in.sling.models.User;
 import in.sling.models.UserPopulated;
+import in.sling.services.CustomCallback;
 import in.sling.services.DataService;
+import in.sling.utils.Chat;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     DataService dataService;
+    Chat chat = Chat.getChatInstance();
+    Thread thread;
+    LoadDialogAsyncTask loadDialogAsyncTask = new LoadDialogAsyncTask();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        new FlurryAgent.Builder()
+                .withLogEnabled(false)
+                .build(this, Constants.FLURRY_KEY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,6 +81,28 @@ public class HomeActivity extends AppCompatActivity
                         NoticeFragment.newInstance()).commit();
         getSupportActionBar().setTitle("Notice Board");
         getSupportActionBar().setSubtitle(dataService.getUser().getSchool().getName());
+        thread = new Thread(new Runnable() {
+            boolean done = false;
+            @Override
+            public void run() {
+                Looper.prepare();
+                Log.i("BG Task","In BG thread");
+                Chat.getChatInstance().getDialogs(new CustomCallback() {
+                    @Override
+                    public void onCallback() {
+                        done = true;
+                    }
+                });
+                try{
+                    while (!done){
+                        Thread.sleep(3000);
+                    }
+                }catch(Exception e){
+                    Log.e("Chat Dialogs", e.getMessage());
+                }
+            }
+        });
+        thread.start();
     }
 
     @Override
@@ -85,6 +125,8 @@ public class HomeActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Log.i("Info","Flurry Log Event");
+        FlurryAgent.logEvent("Nav Item Clicked");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -123,6 +165,53 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private class LoadDialogAsyncTask extends AsyncTask<String,Void,String>{
+
+        boolean done = false;
+        @Override
+        protected String doInBackground(String... params) {
+
+            return null;
+        }
+    }
+
+    class LooperThread extends Thread {
+        public Handler mHandler;
+        private volatile Looper mMyLooper;
+        boolean done = false;
+
+        public void run() {
+            Looper.prepare();
+
+            mHandler = new Handler() {
+                public void handleMessage(Message msg) {
+                    // process incoming messages here
+                }
+            };
+            chat.getDialogs(new CustomCallback() {
+                @Override
+                public void onCallback() {
+                    done = true;
+                    Log.i("Chat Dialog","Done");
+                }
+            });
+            try{
+                while (!done){
+                    Thread.sleep(3000);
+                }
+            }catch(Exception e){
+                Log.e("Chat Dialog",e.getMessage());
+            }
+            mMyLooper = Looper.myLooper();
+
+            Looper.loop();
+        }
+
+        public void killMe(){
+            mMyLooper.quit();
+        }
     }
 
 }

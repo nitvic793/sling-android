@@ -101,8 +101,21 @@ public class NoticeFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         noticeData.clear();
-       // dataService.LoadAllRequiredData(new ProgressDialog(getActivity().getApplicationContext()));
         loadNoticeBoardData();
+        adapter = new NoticeBoardAdapter(noticeData);
+        recyclerView.setAdapter(adapter);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshItems();
+            }
+        });
+
+        return view;
+    }
+
+    private void sort(){
         Object[] noticeArray = noticeData.toArray();
         Arrays.sort(noticeArray, new Comparator<Object>() {
             @Override
@@ -119,24 +132,6 @@ public class NoticeFragment extends Fragment {
             NoticeBoardViewModel nb = (NoticeBoardViewModel)obj;
             noticeData.add(nb);
         }
-//        for(int i=0,k=noticeData.size()-1;i<noticeData.size()/2;++i,k--){
-//            NoticeBoardViewModel temp = noticeData.get(i);
-//            noticeData.set(i,noticeData.get(k));
-//            noticeData.set(k,temp);
-//        }
-        //noticeData.clear();
-       //noticeData.addAll(Arrays.asList(noticeArray));
-        adapter = new NoticeBoardAdapter(noticeData);
-        recyclerView.setAdapter(adapter);
-
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshItems();
-            }
-        });
-
-        return view;
     }
 
     public void refreshItems(){
@@ -147,6 +142,7 @@ public class NoticeFragment extends Fragment {
                 Toast.makeText(getContext(), "Done", Toast.LENGTH_SHORT).show();
                 noticeData.clear();
                 loadNoticeBoardData();
+
                 adapter = new NoticeBoardAdapter(noticeData);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -168,6 +164,7 @@ public class NoticeFragment extends Fragment {
                 noticeData.add(noticeVm);
             }
         }
+        sort();
     }
 
     @Override

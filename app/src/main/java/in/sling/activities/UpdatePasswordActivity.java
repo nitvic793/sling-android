@@ -36,9 +36,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import in.sling.Constants;
 import in.sling.R;
 import in.sling.models.Data;
 import in.sling.models.PasswordPayload;
@@ -79,6 +82,9 @@ public class UpdatePasswordActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        new FlurryAgent.Builder()
+                .withLogEnabled(false)
+                .build(this, Constants.FLURRY_KEY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_password);
         // Set up the login form.

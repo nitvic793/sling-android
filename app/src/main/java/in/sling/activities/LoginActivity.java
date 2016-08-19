@@ -1,9 +1,14 @@
 package in.sling.activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.quickblox.auth.QBAuth;
 import com.quickblox.auth.model.QBSession;
 import com.quickblox.core.QBEntityCallback;
@@ -23,6 +29,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.util.List;
 
+import in.sling.Constants;
 import in.sling.R;
 import in.sling.models.ClassRoom;
 import in.sling.models.ClassRoomNested;
@@ -48,8 +55,15 @@ public class LoginActivity extends AppCompatActivity {
     Intent registerIntent;
     Intent intent;
     DataService dataService;
+    Chat chat;
+
+    Activity activity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        activity = this;
+        new FlurryAgent.Builder()
+                .withLogEnabled(false)
+                .build(this, Constants.FLURRY_KEY);
         JodaTimeAndroid.init(this);
         service = RestFactory.createService();
         super.onCreate(savedInstanceState);
@@ -153,7 +167,8 @@ public class LoginActivity extends AppCompatActivity {
                         else{
                             storeUserType("unknown");
                         }
-                        Chat.initialize(x, getSharedPreferences("in.sling",Context.MODE_PRIVATE));
+                        Chat.initialize(x, getSharedPreferences("in.sling",Context.MODE_PRIVATE), activity);
+                        chat = Chat.getChatInstance();
                         progress.dismiss();
                         progress.setTitle("Loading");
                         progress.setMessage("Gathering required data...");
@@ -161,9 +176,19 @@ public class LoginActivity extends AppCompatActivity {
                         dataService.LoadAllRequiredData(new CustomCallback() {
                             @Override
                             public void onCallback() {
+                                chat.createSession(new CustomCallback() {
+                                    @Override
+                                    public void onCallback() {
+                                        chat.loginChat(new CustomCallback() {
+                                            @Override
+                                            public void onCallback() {
+                                                startActivity(intent);
+                                                progress.dismiss();
+                                            }
+                                        });
+                                    }
+                                });
 
-                                startActivity(intent);
-                                progress.dismiss();
                             }
                         });
                         service = RestFactory.createService(token);
@@ -190,4 +215,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("Error",e.getMessage());
         }
     }
+
+
+
 }

@@ -30,6 +30,7 @@ import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.chat.model.QBDialog;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.core.helper.StringifyArrayList;
 import com.quickblox.core.request.QBRequestGetBuilder;
 import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
@@ -37,6 +38,7 @@ import com.quickblox.users.model.QBUser;
 import org.jivesoftware.smack.SmackException;
 import org.joda.time.DateTime;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -262,9 +264,11 @@ public class ChatMessagingFragment extends Fragment {
             chatMessage.setRecipientId(opponent.getId());
             chatMessage.setSenderId(chat.getCurrentUser().getId());
             chatMessage.setProperty("save_to_history", "1");
-            chatMessage.setProperty("date_Sent",new DateTime().getMillis()+"");
+            chatMessage.setProperty("date_Sent", new DateTime().getMillis() + "");
             qbPrivateChat.sendMessage(chatMessage);
-
+            StringifyArrayList<Integer> userIds = new StringifyArrayList<>();
+            userIds.add(opponent.getId());
+            chat.sendNotifications(userIds);
             chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
             chatText.setText("");
             return true;
