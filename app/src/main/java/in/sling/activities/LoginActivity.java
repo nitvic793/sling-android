@@ -192,26 +192,31 @@ public class LoginActivity extends AppCompatActivity {
                                         chat.loginChat(new CustomCallback() {
                                             @Override
                                             public void onCallback() {
-                                                activity.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
+
                                                         try {
                                                             googleCloudMessaging = GoogleCloudMessaging.getInstance(activity);
-                                                            String regId = googleCloudMessaging.register(Constants.GCM_PROJECT_NUMBER);
-                                                            subscribeToPushNotifications(regId, new CustomCallback() {
+                                                            final String regId = googleCloudMessaging.register(Constants.GCM_PROJECT_NUMBER);
+                                                            activity.runOnUiThread(new Runnable() {
                                                                 @Override
-                                                                public void onCallback() {
-                                                                    startActivity(intent);
-                                                                    progress.dismiss();
+                                                                public void run() {
+                                                                    subscribeToPushNotifications(regId, new CustomCallback() {
+                                                                        @Override
+                                                                        public void onCallback() {
+                                                                            startActivity(intent);
+                                                                            progress.dismiss();
+                                                                        }
+                                                                    });
                                                                 }
                                                             });
+
                                                         }
                                                         catch(Exception e)
                                                         {
-
+                                                            Log.e("Subscription Error", e.getMessage());
+                                                            startActivity(intent);
+                                                            progress.dismiss();
                                                         }
-                                                    }
-                                                });
+
                                             }
                                         });
                                     }
