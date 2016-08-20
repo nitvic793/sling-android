@@ -172,14 +172,7 @@ public class Chat {
                                 @Override
                                 public void onResponse(Call<Data<UserPopulated>> call, Response<Data<UserPopulated>> response) {
                                     Log.i("Chat", "User signed up");
-                                    subscribeToPushNotifications(mUser.getId().toString(), new CustomCallback() {
-                                        @Override
-                                        public void onCallback() {
-                                            cb.onCallback();
-                                            Log.i("Push", "Push callback");
-                                        }
-                                    });
-
+                                    cb.onCallback();
                                 }
                                 @Override
                                 public void onFailure(Call<Data<UserPopulated>> call, Throwable t) {
@@ -196,15 +189,8 @@ public class Chat {
                                 public void onSuccess(QBSession qbSession, Bundle bundle) {
                                     mUser = user;
                                     mUser.setId(qbSession.getUserId());
-                                    subscribeToPushNotifications(mUser.getId().toString(), new CustomCallback() {
-                                        @Override
-                                        public void onCallback() {
-                                            cb.onCallback();
-                                            Log.i("Push", "Push callback");
-                                        }
-                                    });
+                                    cb.onCallback();
                                     Log.i("Chat", "Session created");
-
                                 }
 
                                 @Override
@@ -230,13 +216,7 @@ public class Chat {
                 public void onSuccess(QBSession qbSession, Bundle bundle) {
                     mUser = user;
                     mUser.setId(qbSession.getUserId());
-                    subscribeToPushNotifications(mUser.getId().toString(), new CustomCallback() {
-                        @Override
-                        public void onCallback() {
-                            cb.onCallback();
-                            Log.i("Push", "Push callback");
-                        }
-                    });
+                    cb.onCallback();
                     Log.i("Chat", "Session created");
 
                 }

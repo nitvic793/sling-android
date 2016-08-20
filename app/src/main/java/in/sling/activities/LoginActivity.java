@@ -2,6 +2,7 @@ package in.sling.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,8 +10,10 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,14 +22,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.quickblox.auth.QBAuth;
 import com.quickblox.auth.model.QBSession;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.messages.QBPushNotifications;
+import com.quickblox.messages.model.QBEnvironment;
+import com.quickblox.messages.model.QBNotificationChannel;
+import com.quickblox.messages.model.QBSubscription;
 import com.quickblox.users.model.QBUser;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import in.sling.Constants;
@@ -56,8 +65,9 @@ public class LoginActivity extends AppCompatActivity {
     Intent intent;
     DataService dataService;
     Chat chat;
-
+    private GoogleCloudMessaging googleCloudMessaging;
     Activity activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         activity = this;
@@ -182,8 +192,26 @@ public class LoginActivity extends AppCompatActivity {
                                         chat.loginChat(new CustomCallback() {
                                             @Override
                                             public void onCallback() {
-                                                startActivity(intent);
-                                                progress.dismiss();
+                                                activity.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        try {
+                                                            googleCloudMessaging = GoogleCloudMessaging.getInstance(activity);
+                                                            String regId = googleCloudMessaging.register(Constants.GCM_PROJECT_NUMBER);
+                                                            subscribeToPushNotifications(regId, new CustomCallback() {
+                                                                @Override
+                                                                public void onCallback() {
+                                                                    startActivity(intent);
+                                                                    progress.dismiss();
+                                                                }
+                                                            });
+                                                        }
+                                                        catch(Exception e)
+                                                        {
+
+                                                        }
+                                                    }
+                                                });
                                             }
                                         });
                                     }
@@ -214,6 +242,40 @@ public class LoginActivity extends AppCompatActivity {
             progress.dismiss();
             Log.e("Error",e.getMessage());
         }
+    }
+
+    public void subscribeToPushNotifications(String registrationID,final CustomCallback cb) {
+
+        QBSubscription subscription = new QBSubscription(QBNotificationChannel.GCM);
+        subscription.setEnvironment(QBEnvironment.PRODUCTION);
+        TelephonyManager systemService = (TelephonyManager)activity.getSystemService(
+                Context.TELEPHONY_SERVICE);
+        ContentResolver contentResolver = activity.getContentResolver();
+        String deviceId;
+        final TelephonyManager mTelephony = systemService;
+        if (mTelephony.getDeviceId() != null) {
+            deviceId = mTelephony.getDeviceId(); //*** use for mobiles
+        } else {
+            deviceId = Settings.Secure.getString(contentResolver,
+                    Settings.Secure.ANDROID_ID); //*** use for tablets
+        }
+        subscription.setDeviceUdid(deviceId);
+        //
+        subscription.setRegistrationID(registrationID);
+        //
+        QBPushNotifications.createSubscription(subscription, new QBEntityCallback<ArrayList<QBSubscription>>() {
+            @Override
+            public void onSuccess(ArrayList<QBSubscription> subscriptions, Bundle args) {
+                Log.i("Push", "Subscribed successfully");
+                cb.onCallback();
+            }
+
+            @Override
+            public void onError(QBResponseException error) {
+                Log.e("Push", "Error " + error.getMessage());
+                cb.onCallback();
+            }
+        });
     }
 
 
